@@ -1,0 +1,1143 @@
+
+
+===== PAGE 1 =====
+
+C-SW312 – Healthcare Management System 
+Software Requirements Specification (SRS) 
+Based on the V olere Requirements Specification Template v16 
+ 
+V ersion 1.0 – [23/11/2025] 
+Team members: [Adham Sobhy, Andrew Emad, Yassin Farrag, Ahmed] 
+ 
+We acknowledge that this document uses material from the V olere Requirements 
+Specification Template, copyright © 1995 – 2012 the Atlantic Systems Guild Limited. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Contents 
+1. Project Drivers ................................ ................................ ................................ ........................ 3 
+1.1 Purpose of the Project ................................ ................................ ................................ ....................  3 
+
+
+===== PAGE 2 =====
+
+1.2 User Business / Background ................................ ................................ ................................ ........... 3 
+1.3 Goals of the Project................................ ................................ ................................ ........................  4 
+1.4 Stakeholders ................................ ................................ ................................ ................................ .. 5 
+2. Project Constraints ................................ ................................ ................................ .................. 7 
+2.1 Mandated Constraints (technology, deadlines, budget) ................................ ................................ ... 7 
+2.2 Relevant Facts and Assumptions ................................ ................................ ................................ .... 8 
+2.3 Implementation Environment and Partner Systems ................................ ................................ ......... 9 
+2.4 Naming Conventions and Terminology ................................ ................................ ..........................  9 
+3. Functional Requirements ................................ ................................ ................................ ....... 10 
+3.1 Scope of the Work ................................ ................................ ................................ .......................  10 
+3.2 Scope of the Product ................................ ................................ ................................ ....................  11 
+3.3 Functional Requirements ................................ ................................ ................................ .............  11 
+4. Data and Domain Model ................................ ................................ ................................ ....... 18 
+4.1 Reference to Domain Class Diagram ................................ ................................ ............................  18 
+4.2 Glossary of Key Terms ................................ ................................ ................................ ................  20 
+4.3 Business Data Model and CRUD Overview ................................ ................................ .................  20 
+5. Non-Functional Requirements ................................ ................................ ...............................  22 
+5.1 Look and Feel / Usability ................................ ................................ ................................ .............  22 
+5.2 Performance ................................ ................................ ................................ ................................  22 
+5.3 Operational / Environmental ................................ ................................ ................................ ........ 22 
+5.4 Maintainability & Support ................................ ................................ ................................ ........... 23 
+5.5 Security ................................ ................................ ................................ ................................ ....... 23 
+5.6 Legal / Regulatory ................................ ................................ ................................ .......................  24 
+6. Business Rules ................................ ................................ ................................ ......................  24 
+7. Assumptions and Dependencies ................................ ................................ .............................  25 
+8. Traceability ................................ ................................ ................................ ...........................  26 
+8.1 Requirements–Use Case Traceability Matrix ................................ ................................ ................  26 
+9. Project Issues ................................ ................................ ................................ ........................  27 
+9.1 Open Issues ................................ ................................ ................................ ................................ . 28 
+9.2 Risks ................................ ................................ ................................ ................................ ........... 28 
+9.3 Waiting Room (Future Enhancements) ................................ ................................ .........................  28 
+9.4 Ideas for Solutions ................................ ................................ ................................ .......................  28 
+9.5 User Documentation and Training ................................ ................................ ................................  29 
+ 
+
+
+===== PAGE 3 =====
+
+ 
+ 
+1. Project Drivers 
+ 
+1.1 Purpose of the Project 
+The purpose of this project is to specify and develop a Healthcare Management System for a 
+medium-sized hospital or clinic. The system supports the end-to-end lifecycle of outpatient care, 
+including patient registration, schedule and appointment management, clinical documentation, 
+billing and payments, reminders, and operational reporting. 
+This Software Requirements Specification (SRS) defines the functional and non-functional 
+requirements of the Healthcare Management System. It is based on the V olere Requirements 
+Specification Template v16 and the analytical work from Deliverable 2 (Noun Technique, class 
+diagram, CRUD analysis, state machines, activity diagrams, and System Sequence Diagrams). 
+The SRS serves as a contract between stakeholders (teaching staff, student team, and the notional 
+hospital client) and the development team, and as a reference for design, implementation, testing, 
+and grading. 
+ 
+1.2 User Business / Background 
+ 
+The target environment is a hospital or outpatient clinic that manages patient care using a 
+combination of manual processes and fragmented software. Core activities such as registering 
+patients, booking and cancelling appointments, completing treatments, generating bills, sending 
+reminders, and producing management reports are often handled in separate spreadsheets, paper 
+forms, or ad hoc tools. This leads to: 
+ Scheduling conflicts and double-booked resources. 
+ Missed or late appointments due to lack of reminders. 
+ Delayed or inconsistent billing and payment tracking. 
+ Incomplete medical records and weak audit trails. 
+ Limited visibility into operational performance (e.g., appointment utilization, overdue 
+bills). 
+The Healthcare Management System is intended as an integrated solution that: 
+
+
+===== PAGE 4 =====
+
+ Centralizes core information about Patients, Doctors, Appointments, MedicalRecords, 
+Prescriptions, Rooms, and Bills (as identified by the Noun Technique and class diagram). 
+ Coordinates the work of Patients, Receptionists, Doctors, Administrators, and automated 
+schedulers around a consistent domain model. 
+ Automates recurring and time-dependent behaviours captured in the state machines, 
+activity diagrams, and SSDs (e.g., appointment reminders, cleanup of expired slots, 
+monthly billing). 
+ Provides a realistic case study for applying requirements engineering techniques (V olere 
+template, atomic requirements with fit criteria, UML modeling, CRUD analysis) within 
+the C-SW312 course. 
+1.3 Goals of the Project 
+G1 – Improve appointment and schedule management 
+The system shall provide reliable booking, confirmation, and cancellation workflows that 
+prevent double-booking and enforce the hospital’s cancellation policy. 
+ Advantage: Fewer conflicts and no-shows; more efficient use of doctors and rooms. 
+ Measurement: For all modeled scenarios (UC-01 to UC-12 and UC-T1–T3), 
+appointments respect doctor and room availability, no overlapping confirmed 
+appointments exist for the same doctor-room-timeslot combination, and the Appointment 
+state machine transitions match the defined lifecycle (Requested, Active, Confirmed, 
+InProgress, Completed, Cancelled, Expired). 
+G2 – Support accurate billing and payment handling 
+The system shall generate and manage Bills for completed treatments and support robust 
+payment workflows, including failure and retry handling. 
+ Advantage: Clear financial records per patient, alignment between clinical activity and 
+billing, and realistic integration with external payment services. 
+ Measurement: For the test scenarios, every completed treatment with billable items 
+results in at least one corresponding Bill; each Bill progresses through the Bill lifecycle 
+states (Created, PendingPayment, Paid, Overdue, WrittenOff) according to the specified 
+business rules and use cases (UC-05, UC-07, UC-11, UC-T1). 
+G3 – Enhance information availability and auditability 
+The system shall maintain a single, consistent MedicalRecord per patient and trace key 
+operations across use cases, requirements, and domain classes. 
+ Advantage: Safer clinical decision making, less duplication, and strong justification for 
+design choices across Deliverables 2 and 3. 
+
+
+===== PAGE 5 =====
+
+ Measurement: For each patient there is exactly one MedicalRecord aggregating history; 
+the traceability matrix links each functional requirement (FR-xx) to at least one use case 
+and one domain class; audit logs exist for critical operations such as registration, 
+bookings, cancellations, discharges, payments, overdue and write-off changes. 
+G4 – Serve as a teaching exemplar for requirements engineering 
+The project shall demonstrate the application of the V olere Template and related techniques in a 
+coherent, testable SRS. 
+ Advantage: Supports grading against clear, complete, and measurable requirements 
+while aligning with the course learning outcomes. 
+ Measurement: The SRS covers all required sections of the adapted V olere structure for 
+the course; each FR-xx and NFR-xx includes a fit criterion; all major use cases from 
+Deliverable 2 are represented in the functional requirements and in the requirements–use 
+case–domain class traceability matrix. 
+ 
+1.4 Stakeholders 
+Client / Sponsor (Course Perspective) 
+ Role: Course instructor(s) and teaching team for C-SW312 – Introduction to Software 
+Engineering. 
+ Interest: Use the Healthcare Management System as an assessment artifact 
+demonstrating correct application of requirements engineering techniques, UML 
+modeling, and documentation quality. 
+Customer (Hospital Management) 
+ Role: Representative of hospital administration (e.g., Hospital Manager, Head of 
+Outpatient Services). 
+ Interest: Ensure the system supports efficient day-to-day operations, enforces hospital 
+policies (e.g., appointment cancellation rules, billing and write-off policies), and provides 
+management information via reports. 
+Hands-On Users 
+ Patients 
+ Book, view, and cancel appointments. 
+ View and pay bills. 
+
+
+===== PAGE 6 =====
+
+ Receive notifications and reminders for upcoming appointments and outstanding 
+payments. 
+ Receptionists 
+ Register and update patient information. 
+ Book, confirm, and cancel appointments on behalf of patients. 
+ Help synchronize patient data with external systems where needed. 
+ Doctors 
+ View and manage their schedules. 
+ Complete patient treatments and record clinical notes. 
+ Issue prescriptions and authorize discharges for admitted patients. 
+ System Scheduler / Administrator 
+ Configure and trigger background jobs such as sending appointment reminders, 
+generating weekly reports, monthly billing, and cleaning up expired slots. 
+ Maintain system parameters and operational calendars. 
+ Finance / Billing Staff 
+ Monitor bills and payment statuses. 
+ Handle overdue bills, penalties, and write-off decisions in line with business rules. 
+ Reconcile payments reported by the payment gateway. 
+ IT Operations and Support 
+ Deploy, monitor, and maintain the system in the target environment. 
+ Manage integrations with external services (Payment Gateway, 
+NotificationService, ReportingService, ExternalPatientSystem). 
+ Support backup, recovery, and configuration management. 
+External Systems and Services 
+ Payment Gateway 
+ Processes electronic payments started from the Make payment use case; returns 
+success or failure for each attempt. 
+ NotificationService 
+
+
+===== PAGE 7 =====
+
+ Delivers reminders and notifications (e.g., SMS/email) for bookings, 
+cancellations, and upcoming appointments. 
+ ReportingService 
+ Generates scheduled weekly and monthly operational reports based on data from 
+the Healthcare Management System. 
+ ExternalPatientSystem 
+ Provides or receives patient demographic and clinical data for synchronization 
+scenarios. 
+Development Team (Student Team) 
+ Members: Adham Sobhy, Andrew Emad, Yassin Farrag, Ahmed. 
+ Roles: Act as requirements engineers, analysts, and designers for this case study. 
+ Interest: Use this SRS, together with the Deliverable 2 models (Noun Technique tables, 
+class diagrams, state machines, activity diagrams, SSDs), as the authoritative basis for 
+any implementation or prototype and as evidence for grading. 
+ 
+ 
+ 
+2. Project Constraints 
+2.1 Mandated Constraints (technology, deadlines, budget) 
+C-01 – Core domain data must be persistent 
+The system shall persist all core domain concepts – Patient, Doctor, Appointment, 
+MedicalRecord, Prescription, Room, Bill – in a durable data store so that clinical and financial 
+history can be retrieved over time. 
+C-02 – No physical deletion of MedicalRecord data 
+The system shall not physically delete MedicalRecord data. Logical deactivation or archival is 
+allowed only through defined maintenance or administrative procedures, and historical clinical 
+information must remain accessible for audit and safety. 
+C-03 – Controlled deletion of other entities via maintenance use cases 
+Deletion or cleanup of Appointments, slots, and related transient data shall be performed via 
+explicit maintenance use cases (e.g., Clean up expired slots) rather than ad hoc bulk deletion, and 
+shall preserve an audit trail. 
+
+
+===== PAGE 8 =====
+
+C-04 – External payment gateway integration 
+All electronic payments shall be handled through an external secure Payment Gateway. The 
+Healthcare Management System shall not store full payment card details, but only non-sensitive 
+identifiers and status returned by the gateway. 
+C-05 – Course deadline constraint 
+The SRS, diagrams, and any prototype produced from it shall be completed within the schedule 
+defined for the C-SW312 course deliverables. Scope and level of detail must be achievable 
+within this deadline while still satisfying the functional and non-functional requirements 
+documented here. 
+C-06 – Educational budget constraint 
+The project is conducted as a course assignment with no real monetary budget. The solution 
+must assume the use of standard open-source or institutionally provided tools and platforms, 
+without dependence on expensive commercial licenses beyond what is already available in the 
+teaching environment. 
+ 
+ 
+ 
+ 
+2.2 Relevant Facts and Assumptions 
+The following facts and high-level assumptions shape the requirements and design of the 
+Healthcare Management System: 
+ Each patient is uniquely identified within the system (e.g., by patientID). 
+ There is exactly one long-lived MedicalRecord per patient, aggregating all consultations 
+and clinical notes. 
+ An Appointment links exactly one Patient and one Doctor at a specific date and 
+time, and may reserve a Room. 
+ Bills are generated from completed treatments and track payment status, overdue 
+handling, and possible write-offs. 
+ External services (Payment Gateway, NotificationService, ReportingService, 
+ExternalPatientSystem) provide stable APIs for integration. 
+ More detailed assumptions and dependencies are described in Section 7 of this SRS. 
+ 
+
+
+===== PAGE 9 =====
+
+2.3 Implementation Environment and Partner Systems 
+ 
+The implementation environment describes the technical context in which the Healthcare 
+Management System operates within a medium-sized hospital or clinic. The system assumes: 
+• A persistent data store (e.g., a relational database) able to store core domain classes such 
+as Patient, Doctor, Appointment, MedicalRecord, Prescription, Room, and Bill. 
+• One or more application servers hosting the business logic and APIs that implement the 
+functional and non-functional requirements in this SRS. 
+• User access via standard desktop or web clients for receptionists, doctors, administrators, 
+finance staff, and IT operations. 
+ 
+ The system collaborates with the following external or partner applications at the system 
+boundary: 
+• Payment Gateway: Processes electronic payments for bills initiated from the “Make 
+payment” use case and returns success or failure responses that drive the Bill lifecycle 
+(PendingPayment, Paid, Overdue, WrittenOff). 
+• NotificationService: Delivers SMS/email notifications for reminders, confirmations, and 
+cancellations, and reports delivery success or failure for logging and summary reporting. 
+• ReportingService: Generates weekly and monthly operational reports requested by the 
+system scheduler and returns summaries or report artifacts. 
+• ExternalPatientSystem: Supplies or receives patient demographic and clinical data when 
+synchronizing patient information and is invoked by the “Synchronize patient 
+information” use case and related SSD. 
+ 
+These partner systems are treated as black boxes; only their interfaces and observable behaviours 
+(as shown in the SSDs) are relevant. 
+2.4 Naming Conventions and Terminology 
+The Healthcare Management System uses consistent naming conventions across this SRS and the 
+supporting UML models: 
+  Domain classes use UpperCamelCase names: Patient, Doctor, Appointment, 
+MedicalRecord, Prescription, Room, Bill, Consultation, Person, Staff, Nurse, Medicine. 
+ Use cases are identified by IDs and descriptive names such as: 
+ UC-01 Book appointment 
+ UC-02 Register patient information 
+ UC-03 Manage doctor schedule 
+
+
+===== PAGE 10 =====
+
+ UC-04 Confirm appointment slot 
+ UC-05 Complete patient treatments 
+ UC-06 Cancel appointment 
+ UC-07 Make payment 
+ UC-08 Authorize patient discharge 
+ UC-09 Send appointment reminders 
+ UC-10 Generate weekly report schedule 
+ UC-11 Generate monthly bill 
+ UC-12 Clean up expired slots 
+ UC-T1 Handle payment failure 
+ UC-T2 Update slot availability 
+ UC-T3 Synchronize patient information 
+  Functional requirements are labeled FR-xx; non-functional requirements are labeled 
+NFR-xx. 
+ 
+  Diagrams use the same identifiers as the related use cases and domain classes (e.g., 
+“State Machine #1 – Bill Lifecycle,” “Activity Diagram – UC-01 Book appointment,” 
+“SSD_UC01_BookAppointment_Primary”). 
+ 
+  Common acronyms include SRS, SSD, FR, NFR. 
+The glossary in the Data and Domain Model section provides concise definitions for domain 
+terms such as Appointment, Bill, MedicalRecord, Consultation, and Reminder. 
+ 
+3. Functional Requirements 
+ 
+3.1 Scope of the Work 
+The scope of the work covers the operational processes involved in managing outpatient care 
+and related administrative tasks at a hospital or clinic. The following business activities are in 
+scope: 
+ Registering and maintaining patient information. 
+ Managing doctor schedules and appointment slots. 
+ Booking, confirming, cancelling, and completing appointments. 
+ Recording treatments and updating patient MedicalRecords. 
+
+
+===== PAGE 11 =====
+
+ Generating and managing bills for completed treatments. 
+ Handling patient payments, including payment failures and retries. 
+ Sending appointment reminders and related notifications. 
+ Generating weekly and monthly operational reports. 
+ Running maintenance and cleanup jobs for expired or inconsistent data. 
+ Synchronizing patient information with an external system when required. 
+These activities are captured in the use cases defined in Deliverable 2, including UC-01 to 
+UC-12 and UC-T1 to UC-T3. 
+ 
+3.2 Scope of the Product 
+The Healthcare Management System is responsible for automating the above work within a 
+defined system boundary. The product: 
+ Maintains the core domain objects: Patient, Doctor, Appointment, MedicalRecord, 
+Prescription, Room, Bill. 
+ Provides user interfaces and APIs for Patients, Receptionists, Doctors, Administrators, 
+and Finance/Billing staff. 
+ Communicates with external services (Payment Gateway, NotificationService, 
+ReportingService, ExternalPatientSystem) through defined interfaces. 
+ Manages state transitions for Appointments and Bills as specified by the state machine 
+diagrams. 
+ Executes scheduled jobs for reminders, reporting, billing, and cleanup. 
+The product explicitly does not cover low-level hardware details, detailed UI screen design, or 
+deep analytics beyond the reports described in the functional requirements. 
+ 
+3.3 Functional Requirements  
+FR-01 – Register new patient 
+ Description: The system shall allow a receptionist to register a new patient by 
+entering core demographic and contact details. 
+ Source: UC-02 Register patient information; Noun Technique (Patient). 
+
+
+===== PAGE 12 =====
+
+ Rationale: New patients must be captured before any clinical or billing activities can 
+take place. 
+ Fit Criterion: Given a receptionist with access rights, when they complete all mandatory 
+registration fields and submit, the system creates a new Patient record with a unique 
+patientID and displays a confirmation. 
+FR-02 – Maintain patient information 
+ Description: The system shall allow authorized users to update existing patient 
+information (e.g., address, phone, insurance details) while preserving historical data 
+where required. 
+ Source: UC-02 Register patient information; UC-T3 Synchronize patient information. 
+ Rationale: Patient data frequently changes and must remain accurate. 
+ Fit Criterion: Given an existing patient, when an authorized user edits and saves 
+changes, the updated fields are stored and visible in subsequent views of the patient 
+profile. 
+FR-03 – Create and update medical record 
+ Description: The system shall automatically create a MedicalRecord for each new 
+patient and allow doctors to update it with diagnoses, allergies, and clinical notes after 
+each consultation. 
+ Source: UC-02 Register patient information; UC-05 Complete patient treatments. 
+ Rationale: A single, longitudinal medical record per patient is required for safe and 
+consistent care. 
+ Fit Criterion: For each patient, exactly one MedicalRecord exists; after a completed 
+treatment, new clinical notes are appended and visible in the patient’s history. 
+FR-04 – Manage doctor schedules 
+ Description: The system shall allow a doctor or authorized staff to view, add, modify, 
+and block timeslots in a doctor’s schedule. 
+ Source: UC-03 Manage doctor schedule. 
+ Rationale: Controlled schedule management is needed to avoid conflicts and support 
+booking. 
+ Fit Criterion: When a doctor submits schedule changes with no conflicts, the updated 
+slots are stored and are reflected in subsequent appointment searches. 
+FR-05 – Book appointment 
+
+
+===== PAGE 13 =====
+
+ Description: The system shall allow a patient to book an appointment with a doctor by 
+selecting a date, time, and available slot. 
+ Source: UC-01 Book appointment. 
+ Rationale: Booking appointments is a core service of the hospital system. 
+ Fit Criterion: Given an available slot and a valid patient, when booking is requested, an 
+Appointment with status Requested or Confirmed is created and linked to the Patient and 
+Doctor. 
+FR-06 – Confirm appointment slots 
+ Description: The system shall allow a receptionist or authorized staff to confirm 
+pending appointments and assign them to a final room and timeslot. 
+ Source: UC-04 Confirm appointment slot. 
+ Rationale: Some organizations require manual confirmation before appointments 
+become final. 
+ Fit Criterion: When a pending appointment is confirmed and the slot is still valid, 
+the Appointment status changes to Confirmed and the assigned Room is recorded. 
+FR-07 – Prevent schedule conflicts 
+ Description: The system shall prevent double-booking of the same doctor, room, and 
+timeslot. 
+ Source: UC-01 Book appointment; UC-03 Manage doctor schedule; UC-04 Confirm 
+appointment slot; UC-T2 Update slot availability. 
+ Rationale: Avoiding conflicts is critical for operational efficiency and patient 
+satisfaction. 
+ Fit Criterion: When a new appointment or schedule change would overlap an existing 
+confirmed Appointment for the same doctor and room, the system rejects the change and 
+explains the conflict. 
+FR-08 – Cancel appointment 
+ Description: The system shall allow a patient or receptionist to cancel a confirmed 
+appointment, subject to the cancellation policy. 
+ Source: UC-06 Cancel appointment. 
+ Rationale: Patients may need to reschedule and the system must free slots accordingly. 
+
+
+===== PAGE 14 =====
+
+ Fit Criterion: When a valid cancellation request is made more than 24 hours before the 
+appointment time, the Appointment status is set to Cancelled, the slot is freed, and 
+notifications are sent to both patient and doctor. 
+FR-09 – Handle late cancellation 
+ Description: The system shall enforce the cancellation policy for late cancellations (≤ 24 
+hours before the appointment) by either blocking cancellation or applying 
+late-cancellation rules. 
+ Source: UC-06 Cancel appointment; Appointment State Machine. 
+ Rationale: Late cancellations should be treated differently for fairness and revenue 
+protection. 
+ Fit Criterion: For cancellation requests within 24 hours of the appointment time, 
+the system displays a warning and either refuses cancellation or records a CancelledLate 
+status and logs any applicable penalty according to configuration. 
+FR-10 – Complete treatments and appointments 
+ Description: The system shall allow a doctor to mark an appointment as Completed and 
+record treatment details at the end of a consultation. 
+ Source: UC-05 Complete patient treatments; Appointment State Machine. 
+ Rationale: Completion and documentation of treatment are required for clinical and 
+billing processes. 
+ Fit Criterion: When the doctor submits valid treatment details for an in-progress 
+appointment, the Appointment status becomes Completed, the MedicalRecord is updated, 
+and optional Prescription data is stored. 
+FR-11 – Clean up expired appointments and slots 
+ Description: The system shall automatically detect and update appointments and slots 
+that have expired based on configured rules (e.g., no-show or time window elapsed). 
+ Source: UC-12 Clean up expired slots; Appointment State Machine. 
+ Rationale: Expired or unused slots must be released to keep schedules consistent. 
+ Fit Criterion: When the cleanup job runs, appointments that satisfy the expiry conditions 
+are updated to an Expired state and their associated slots are freed; a summary of affected 
+records is produced. 
+FR-12 – Generate bills for completed treatments 
+
+
+===== PAGE 15 =====
+
+ Description: The system shall generate Bill records for completed treatments and 
+services, either at the time of completion or as part of a periodic billing run. 
+ Source: UC-05 Complete patient treatments; UC-11 Generate monthly bill; Bill State 
+Machine. 
+ Rationale: Bills must be generated accurately to support payment and reporting. 
+ Fit Criterion: For each completed treatment with billable items, at least one Bill is 
+created or updated with the correct patient, amount, and due date. 
+FR-13 – Monthly billing run 
+ Description: The system shall support a monthly billing process that consolidates 
+relevant billable items into bills and updates their statuses. 
+ Source: UC-11 Generate monthly bill. 
+ Rationale: Many hospitals generate monthly statements for patients. 
+ Fit Criterion: When the monthly billing job runs for a target period, it reports how many 
+bills were generated or updated and the total billed amount. 
+FR-14 – Make payment 
+ Description: The system shall allow a patient to pay outstanding bills via an 
+external payment gateway. 
+ Source: UC-07 Make payment; UC-T1 Handle payment failure; Bill State Machine. 
+ Rationale: Electronic payments are required for efficient revenue collection. 
+ Fit Criterion: Given a bill in PendingPayment status, when the patient confirms a valid 
+payment and the gateway returns success, the Bill status becomes Paid and the 
+transaction is recorded. 
+FR-15 – Handle payment failures and retries 
+ Description: The system shall handle failed payment attempts by informing the patient, 
+logging the failure, and allowing limited retries. 
+ Source: UC-T1 Handle payment failure; UC-07 Make payment; Appointment and Bill 
+State Machines. 
+ Rationale: Robust error handling is required to deal with declined or timed-out 
+transactions. 
+
+
+===== PAGE 16 =====
+
+ Fit Criterion: When the payment gateway indicates failure, the system shows a clear 
+error message and lets the patient either retry the payment (up to a configured maximum) 
+or cancel, leaving the bill in PendingPayment. 
+FR-16 – Overdue and write-off handling 
+ Description: The system shall automatically mark bills as Overdue after their due date 
+and allow authorized staff to mark long-overdue bills as WrittenOff. 
+ Source: Bill State Machine; billing policies. 
+ Rationale: Overdue tracking and write-offs are necessary for financial control. 
+ Fit Criterion: After the due date passes without full payment, the Bill status changes to 
+Overdue; when an authorized user chooses to write off a bill, the status becomes 
+WrittenOff and the change is logged. 
+FR-17 – Send appointment reminders 
+ Description: The system shall send reminders for upcoming appointments to patients 
+and/or doctors according to configurable lead times. 
+ Source: UC-09 Send appointment reminders; Appointment State Machine. 
+ Rationale: Reminders reduce no-shows and improve utilization. 
+ Fit Criterion: When the reminder job runs, all appointments within the configured 
+reminder window generate reminder messages; the system records which reminders were 
+successfully sent. 
+FR-18 – Manage notification delivery via services 
+ Description: The system shall delegate delivery of reminders and notifications to an 
+external NotificationService while tracking delivery success or failure. 
+ Source: UC-09 Send appointment reminders; SSDs. 
+ Rationale: Separation of concerns between core system and communication channels. 
+ Fit Criterion: For each reminder batch, the system logs the number of successfully 
+delivered and failed notifications as reported by the NotificationService. 
+FR-19 – Generate weekly operational reports 
+ Description: The system shall generate weekly operational reports (e.g., appointments, 
+cancellations, utilization) on request from a scheduler or administrator. 
+ Source: UC-10 Generate weekly report schedule. 
+ Rationale: Management needs regular visibility into system usage and performance. 
+
+
+===== PAGE 17 =====
+
+ Fit Criterion: When the weekly report job runs, at least one report file or summary is 
+produced, or the system explicitly reports that no data is available for the period. 
+FR-20 – Update slot availability 
+ Description: The system shall maintain up-to-date availability of appointment slots 
+based on doctor schedules, bookings, cancellations, and maintenance jobs. 
+ Source: UC-T2 Update slot availability; UC-01 Book appointment; UC-03 Manage 
+doctor schedule; UC-12 Clean up expired slots. 
+ Rationale: Slot availability must remain consistent across all booking and scheduling 
+operations. 
+ Fit Criterion: After the update job runs, the number of free, reserved, and blocked slots 
+matches the expected state derived from current appointments and schedules. 
+FR-21 – Synchronize patient information with external systems 
+ Description: The system shall synchronize selected patient data with an external patient 
+information system when requested by authorized staff. 
+ Source: UC-T3 Synchronize patient information. 
+ Rationale: Some patient details originate from or must be shared with external systems. 
+ Fit Criterion: When synchronization is triggered for a patient, data differences are 
+resolved according to configured rules; on success, local Patient and MedicalRecord data 
+reflect the latest agreed information or an error is reported if synchronization fails. 
+FR-22 – Audit key operations 
+ Description: The system shall log key operations (e.g., registration, schedule changes, 
+cancellations, payments, write-offs, discharges) with timestamps and user identifiers. 
+ Source: All use cases; legal and audit needs. 
+ Rationale: Auditing is required for safety, accountability, and compliance. 
+ Fit Criterion: For each audited operation, an entry exists in the audit log specifying the 
+actor, timestamp, operation type, and affected entities. 
+
+
+===== PAGE 18 =====
+
+4. Data and Domain Model 
+4.1 Reference to Domain Class Diagram 
+The Healthcare Management System is built around an agreed domain model derived from the 
+Noun Technique and CRUD analysis in Deliverable 2. The seven core persistent domain classes 
+are: 
+ Patient 
+ Doctor 
+ Appointment 
+ MedicalRecord 
+ Prescription 
+ Room 
+ Bill 
+Additional supporting classes such as Person, Staff, Nurse, Consultation, and Medicine are 
+introduced in the UML Class Diagram as refinements or generalizations. The class diagram 
+defines: 
+ Associations between patients, doctors, appointments, rooms, medical records, 
+prescriptions, and bills. 
+ Multiplicities (e.g., one Patient has exactly one MedicalRecord; one Prescription 
+can contain multiple Medicine items). 
+ Generalization hierarchies (e.g., Patient and Staff inherit from Person; Doctor and Nurse 
+specialize Staff). 
+ Composition and aggregation relationships (e.g., Patient -- MedicalRecord; Prescription 
+o-- Medicine). 
+This SRS assumes that the implementation will be consistent with that domain model. 
+
+
+===== PAGE 19 =====
+
+ 
+ 
+ 
+ 
+ 
+
+
+
+===== PAGE 20 =====
+
+4.2 Glossary of Key Terms 
+Term Definition 
+Patient An individual receiving medical care and associated with exactly one 
+MedicalRecord. 
+Doctor A member of medical staff authorized to provide consultations and 
+complete treatments. 
+Appointment A scheduled meeting between a Patient and a Doctor at a specific date, 
+time, and location. 
+MedicalRecord The longitudinal clinical history for a Patient, including diagnoses, 
+allergies, and notes. 
+Consultation A clinical encounter between a Patient and a Doctor, typically associated 
+with an Appointment. 
+Prescription A set of instructions for medicines prescribed to a Patient after 
+a consultation. 
+Room A physical location (e.g., consultation room, ward bed) assigned to 
+patients and appointments. 
+Bill A financial record summarizing charges for treatments and services 
+provided to a Patient. 
+Reminder A notification sent to patients or doctors about upcoming appointments 
+or outstanding bills. 
+System scheduler An automated or administrative actor that initiates batch jobs (reminders, 
+reports, billing, cleanup). 
+Payment Gateway An external service that processes electronic payments initiated by the 
+system. 
+NotificationService An external service responsible for delivering SMS/email or other 
+notifications. 
+ReportingService An external service that generates operational reports from system data. 
+ExternalPatientSystem An external system with which patient data may be synchronized. 
+ 
+4.3 Business Data Model and CRUD Overview 
+ 
+
+
+===== PAGE 21 =====
+
+The business data model is derived from the Noun Technique, the domain class list, noun 
+classification, and CRUD analysis from Deliverable 2. Core persistent domain classes include: 
+ Patient – individual receiving care. 
+ Doctor – medical staff conducting consultations. 
+ Appointment – scheduled meeting between a Patient and a Doctor. 
+ MedicalRecord – single longitudinal record per patient containing history and clinical 
+notes. 
+ Prescription – details of medication ordered after treatments. 
+  Room – physical location assigned to patients and appointments. 
+ Bill – invoice generated for services rendered. 
+ 
+Supporting classes (Person, Staff, Nurse, Consultation, Medicine) refine and generalize these 
+concepts. Key modeling decisions include: 
+ Use of an abstract Person class, with Patient and Staff as specializations and Staff further 
+specialized into Doctor and Nurse. 
+ Composition between Patient and MedicalRecord, ensuring each patient has exactly one 
+medical record. 
+ Aggregation between Prescription and Medicine, allowing medicines to exist 
+independently as inventory items. 
+ Separation between scheduling (Appointment) and clinical work (Consultation, 
+MedicalRecord). 
+ 
+CRUD responsibilities include: 
+ Patient and MedicalRecord creation and updates via UC-02 and UC-05; MedicalRecord 
+is update-only. 
+ Appointment creation via UC-01, updates via UC-03 and UC-04, cancellation via UC-06, 
+and cleanup via UC-12. 
+ Bill creation and updates in UC-05 and UC-11, and updates in UC-07 and UC-T1. 
+ Deletions centralized in maintenance and cleanup processes such as UC-12. 
+ 
+This structure ensures: 
+ Each persistent class has clear CRUD ownership. 
+ Use cases align with domain objects and UML diagrams. 
+ Requirements FR-01 to FR-22 are supported by a stable model. 
+
+
+===== PAGE 22 =====
+
+5. Non-Functional Requirements 
+5.1 Look and Feel / Usability 
+NFR-01 – Learnability for receptionists 
+ Description: The system shall be easy for receptionists to learn for core 
+tasks (registration, booking, cancellation). 
+ Fit Criterion: New receptionists with basic computer literacy shall be able to 
+perform registration and simple booking tasks after at most 2 hours of guided training. 
+NFR-02 – Task efficiency for booking 
+ Description: The system shall minimize the number of steps required for common tasks. 
+ Fit Criterion: Completing a standard appointment booking (for a known patient and 
+doctor) shall require no more than 7 major user interactions from start to confirmation. 
+5.2 Performance 
+NFR-03 – Response time for interactive operations 
+ Description: The system shall provide acceptable response times for interactive 
+operations (e.g., booking, cancellation, viewing bills). 
+ Fit Criterion: For at least 95% of interactive requests under normal load (up to 50 
+concurrent users), the system shall respond within 3 seconds. 
+NFR-04 – Background job completion time 
+ Description: The system shall execute batch jobs (reminders, reports, monthly 
+billing, cleanup) within a reasonable time window. 
+ Fit Criterion: Under normal data volumes for a medium-sized hospital, the nightly batch 
+of reminder, billing, and cleanup jobs shall complete within 30 minutes. 
+5.3 Operational / Environmental 
+NFR-05 – System availability window 
+ Description: The system shall be available during defined operational hours. 
+ Fit Criterion: During scheduled operating hours (e.g., 07:00–22:00 local time), the 
+system shall be available at least 99% of the time over a one-month period, excluding 
+planned maintenance. 
+NFR-06 – Failure handling and recovery for external services 
+
+
+===== PAGE 23 =====
+
+ Description: The system shall handle failures of external services (payment gateway, 
+notification, reporting, external patient systems) without data loss or inconsistent states. 
+ Fit Criterion: For simulated outages of external services, all affected requests either 
+complete successfully later (retry) or are rolled back with clear error messages; no partial 
+payments or orphaned appointments remain. 
+5.4 Maintainability & Support 
+NFR-07 – Configurable business policies 
+ Description: The system shall allow key business policies (e.g., cancellation time 
+window, maximum payment retries, reminder lead times) to be configured without code 
+changes. 
+ Fit Criterion: Authorized administrators can change these policy parameters 
+through configuration or administration screens and see the new values applied to 
+subsequent operations. 
+NFR-08 – Logging for support 
+ Description: The system shall provide structured logging of errors and key events to 
+support troubleshooting. 
+ Fit Criterion: For a sample of known error scenarios (e.g., payment failure, notification 
+failure, invalid data), corresponding log entries exist with timestamps, user IDs (if 
+applicable), and clear error messages. 
+5.5 Security 
+NFR-09 – User authentication 
+ Description: The system shall require secure authentication for all non-public functions. 
+ Fit Criterion: All access to patient, schedule, billing, and reporting functions is restricted 
+to authenticated users with valid credentials; unauthenticated requests are rejected. 
+NFR-10 – Role-based access control 
+ Description: The system shall enforce role-based permissions (e.g., Patient, Receptionist, 
+Doctor, Administrator, Finance). 
+ Fit Criterion: Attempts to perform operations beyond the user’s role (for example, a 
+patient trying to modify another patient’s record, or a receptionist writing off a bill 
+without authorization) are denied and logged. 
+NFR-11 – Data confidentiality in transit 
+
+
+===== PAGE 24 =====
+
+ Description: The system shall protect sensitive data transmitted over networks (e.g., 
+login credentials, medical and billing data). 
+ Fit Criterion: All application traffic that includes personal or medical data is transmitted 
+over encrypted channels (e.g., HTTPS/TLS); plain-text access endpoints are disabled. 
+5.6 Legal / Regulatory 
+NFR-12 – Confidentiality of medical records 
+ Description: The system shall protect the confidentiality of medical records in line with 
+healthcare privacy principles applicable to the notional hospital. 
+ Fit Criterion: Access to MedicalRecord details is restricted to authorized clinical roles; 
+attempts from unauthorized roles are denied and recorded in the audit trail. 
+NFR-13 – Audit trail completeness 
+ Description: The system shall maintain an audit trail for key clinical and financial 
+events. 
+ Fit Criterion: For a sample of at least 20 random operations (e.g., bookings, 
+cancellations, discharges, payments, write-offs), corresponding audit log entries exist 
+with correct actor, timestamp, and operation details. 
+ 
+6. Business Rules 
+BR-01 – Appointment cancellation policy 
+ Patients may cancel appointments without penalty only if the cancellation occurs 
+more than 24 hours before the scheduled appointment time. 
+ Cancellations at or within 24 hours of the appointment are treated as late cancellations 
+and may be blocked or recorded with penalties, according to hospital policy. 
+BR-02 – Single medical record per patient 
+ Each patient shall have exactly one MedicalRecord that aggregates all consultations 
+and clinical notes; multiple separate medical records for the same individual are not 
+allowed. 
+BR-03 – Bill overdue and write-off 
+ A bill becomes Overdue when its due date has passed without full payment. 
+
+
+===== PAGE 25 =====
+
+ Overdue bills may later be WrittenOff by authorized staff based on hospital financial 
+policy; write-offs must be logged and cannot be reversed without explicit administrative 
+action. 
+BR-04 – Discharge preconditions 
+ A patient may be discharged only if all required treatments are completed, critical 
+medical information is recorded, and no blocking conditions (e.g., mandatory 
+observations) remain. This is enforced in the Authorize patient discharge use case. 
+BR-05 – Payment before certain services 
+ For services requiring prepayment, the associated Appointment shall not reach 
+Confirmed or InProgress states until the corresponding Bill is in a Paid or acceptable 
+PendingPayment state as defined by hospital policy. 
+ 
+7. Assumptions and Dependencies 
+A-01 – Unique patient identification 
+Each patient has a unique identifier within the hospital system (e.g., patientID), which is used to 
+link appointments, medical records, and bills. 
+A-02 – Network connectivity 
+The system operates in an environment with reliable network connectivity sufficient to reach 
+external services (Payment Gateway, NotificationService, ReportingService, 
+ExternalPatientSystem). 
+A-03 – Availability of external services 
+External services required by the system (e.g., payment gateway, notification, reporting, external 
+patient system) provide documented and reasonably stable interfaces, and are maintained by their 
+respective providers. 
+A-04 – Trained users 
+Receptionists, doctors, administrators, and finance staff receive basic training on the system’s 
+user interface and workflows before operating it in a live environment. 
+Dependencies: 
+The successful operation of the Healthcare Management System depends on: 
+ Deployment on suitable hardware and infrastructure (database, application server, 
+network). 
+ Availability of integration endpoints and credentials for external services. 
+
+
+===== PAGE 26 =====
+
+ Institutional policies that clearly define cancellation rules, billing practices, and write-off 
+criteria. 
+ 
+8. Traceability 
+8.1 Requirements–Use Case Traceability Matrix 
+The following matrix links each functional requirement to its main source use case(s), primary 
+domain classes, and related diagrams. 
+Req 
+ID Related Use Case(s) Main Domain Classes Related Diagrams 
+FR-01 UC-02 Register patient information Patient, MedicalRecord 
+SSD UC-02; Class Diagram 
+(Patient, MedicalRecord) 
+FR-02 
+UC-02 Register patient information; 
+UC-T3 Synchronize info Patient, MedicalRecord 
+SSD UC-02, UC-T3; 
+Class Diagram 
+FR-03 
+UC-02 Register patient information; 
+UC-05 Complete treatments Patient, MedicalRecord 
+SSD UC-02, UC-05; Class 
+Diagram 
+FR-04 UC-03 Manage doctor schedule Doctor, Appointment, Room SSD UC-03; Class Diagram 
+FR-05 UC-01 Book appointment 
+Patient, Doctor, 
+Appointment, Room 
+Activity UC-01; SSD UC-01; 
+Appointment State Machine 
+FR-06 UC-04 Confirm appointment slot Appointment, Room 
+SSD UC-04; Appointment State 
+Machine 
+FR-07 
+UC-01, UC-03, UC-04, UC-T2 Update 
+slot availability Doctor, Appointment, Room 
+SSD UC-01, UC-03, UC-04, 
+UC-T2; Class Diagram 
+FR-08 UC-06 Cancel appointment Appointment, Room 
+Activity UC-06; SSD UC-06; 
+Appointment State Machine 
+FR-09 UC-06 Cancel appointment Appointment 
+Activity UC-06; Appointment 
+State Machine 
+FR-10 UC-05 Complete patient treatments 
+Appointment, 
+MedicalRecord, Prescription 
+SSD UC-05; Class Diagram; 
+Appointment State Machine 
+
+
+===== PAGE 27 =====
+
+Req 
+ID Related Use Case(s) Main Domain Classes Related Diagrams 
+FR-11 UC-12 Clean up expired slots Appointment, Room 
+SSD UC-12; Appointment 
+State Machine 
+FR-12 
+UC-05 Complete treatments; 
+UC-11 Generate monthly bill Bill, Appointment, Patient 
+SSD UC-05, UC-11; Bill 
+State Machine 
+FR-13 UC-11 Generate monthly bill Bill SSD UC-11; Bill State Machine 
+FR-14 UC-07 Make payment Bill 
+Activity UC-07; SSD UC-07; Bill 
+State Machine 
+FR-15 
+UC-T1 Handle payment failure; UC-07 
+Make payment Bill 
+SSD UC-T1; Activity UC-07; Bill 
+State Machine 
+FR-16 
+Billing policies; 
+maintenance/administrative use cases Bill Bill State Machine 
+FR-17 UC-09 Send appointment reminders 
+Appointment, Patient, 
+Doctor 
+SSD UC-09; Appointment State 
+Machine 
+FR-18 UC-09 Send appointment reminders Appointment 
+SSD UC-09; SSD with 
+NotificationService 
+FR-19 
+UC-10 Generate weekly report 
+schedule 
+Bill, Appointment, 
+MedicalRecord 
+SSD UC-10; reporting-related 
+diagrams (if provided) 
+FR-20 
+UC-T2 Update slot availability; UC-01; 
+UC-03; UC-12 Appointment, Doctor, Room 
+SSD UC-T2; SSD 
+UC-01, UC-03, UC-12; 
+Class Diagram 
+FR-21 UC-T3 Synchronize patient information Patient, MedicalRecord SSD UC-T3 
+FR-22 All use cases (for audited operations) 
+All core domain classes (via 
+logged operations) 
+State Machines; SSDs; Class 
+Diagram 
+ 
+9. Project Issues 
+ 
+
+
+===== PAGE 28 =====
+
+9.1 Open Issues 
+ 
+The following items remain open at the SRS level but do not block design or implementation: 
+• Exact user interface layout and screen design are unspecified; only behaviour and 
+usability goals are defined. 
+• The technology stack (database vendor, framework, deployment platform) is not fixed. 
+• Hospital-specific parameters (penalties, thresholds, timing rules) are configurable rather 
+than hard-coded. 
+ 
+9.2 Risks 
+ 
+Key risks include: 
+• R-01 – Inconsistency between SRS and UML models due to misinterpretations. 
+• R-02 – Underestimation of implementation effort for all use cases UC-01 to UC-12 and 
+UC-T1 to UC-T3. 
+• R-03 – Simplified external services in prototypes, resulting in behaviour that differs from 
+real-world integrations. 
+ 
+9.3 Waiting Room (Future Enhancements) 
+ 
+Future enhancements, not in scope for this deliverable, include: 
+• In-patient bed management, ward transfers, and admission workflows. 
+• Advanced analytics dashboards (no-show prediction, capacity planning, revenue 
+analytics). 
+• A patient-facing mobile application with push notifications and self-service features. 
+• Integration with laboratory and imaging systems for results import. 
+ 
+9.4 Ideas for Solutions 
+ 
+Although this SRS focuses on requirements, the following design ideas are noted: 
+• Use a layered architecture separating presentation, application logic, and domain model. 
+
+
+===== PAGE 29 =====
+
+• Implement scheduled jobs for reminders, reporting, billing, and cleanup. 
+• Use RESTful or message-based APIs for external integrations, consistent with SSDs. 
+ 
+9.5 User Documentation and Training 
+ 
+Expected documentation and training materials include: 
+• A user guide explaining tasks for Patients, Receptionists, Doctors, Administrators, and 
+Finance staff. 
+• Short training sessions (up to 2 hours) for registration, booking, cancellation, treatments, 
+and troubleshooting. 
+• Reference material for administrators and IT staff on configuration options and 
+monitoring background jobs. 
+ 
+ 
+
+
+===== PAGE 30 =====
+
+10. UML Diagrams and Models 
+10.1 State Machine Diagrams 
+State Machine #1 – Bill Lifecycle 
+ 
+
+
+
+===== PAGE 31 =====
+
+State Machine #2 – Appointment Lifecycle 
+ 
+ 
+
+
+
+===== PAGE 32 =====
+
+10.2 Activity Diagrams for Complex Use Cases 
+Activity Diagram – UC‑01 Book appointment 
+ 
+ 
+
+
+
+===== PAGE 33 =====
+
+Activity Diagram – UC‑06 Cancel appointment 
+ 
+ 
+Activity Diagram – UC‑07 Make payment 
+ 
+ 
+
+
+
+===== PAGE 34 =====
+
+10.3 System Sequence Diagrams 
+ 
+SSD – UC‑01 Book appointment 
+ 
+ 
+
+
+
+===== PAGE 35 =====
+
+SSD – UC‑02 Register patient information 
+ 
+ 
+
+
+
+===== PAGE 36 =====
+
+SSD – UC‑03 Manage doctor schedule 
+ 
+
+
+
+===== PAGE 37 =====
+
+SSD – UC‑04 Confirm appointment slot 
+ 
+
+
+
+===== PAGE 38 =====
+
+SSD – UC‑05 Complete patient treatments 
+ 
+
+
+
+===== PAGE 39 =====
+
+SSD – UC‑06 Cancel appointment 
+ 
+ 
+
+
+
+===== PAGE 40 =====
+
+SSD – UC‑07 Make payment 
+ 
+
+
+
+===== PAGE 41 =====
+
+SSD – UC‑08 Authorize patient discharge 
+ 
+
+
+
+===== PAGE 42 =====
+
+SSD – UC‑09 Send appointment reminders 
+ 
+
+
+
+===== PAGE 43 =====
+
+SSD – UC‑10 Generate weekly report schedule 
+ 
+
+
+
+===== PAGE 44 =====
+
+SSD – UC‑11 Generate monthly bill 
+ 
+
+
+
+===== PAGE 45 =====
+
+SSD – UC‑12 Clean up expired slots 
+ 
+
+
+
+===== PAGE 46 =====
+
+SSD – UC‑T1 Handle payment failure 
+ 
+
+
+
+===== PAGE 47 =====
+
+SSD – UC‑T2 Update slot availability 
+ 
+SSD – UC‑T3 Synchronize patient information 
+ 

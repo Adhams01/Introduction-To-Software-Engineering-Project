@@ -6,3 +6,6 @@
 # OS files
 .DS_Store
 Thumbs.db
+/Deliverable five/HospitalMangementSystem/nbproject/private/
+/Deliverable five/HospitalMangementSystem/build/
+/Deliverable five/HospitalMangementSystem/dist/

@@ -1,0 +1,1794 @@
+
+
+===== PAGE 1 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 1 of 44 
+ 
+Contents 
+Selection of Core Use Cases for User Interface Design................................ ................................ 2 
+UC-01 – Book appointment ................................ ................................ ................................ .....3 
+UC‑02 – Register patient information ................................ ................................ ...................... 4 
+UC-03 – Manage doctor schedule ................................ ................................ ............................ 4 
+UC‑06 – Cancel appointment ................................ ................................ ................................ ..4 
+UC-07 – Make payment ................................ ................................ ................................ ..........5 
+Assumptions ................................ ................................ ................................ ............................... 5 
+User Interface List for Core Use Cases ................................ ................................ ........................ 6 
+Mapping of User Interfaces to Use Cases ................................ ................................ ................ 8 
+User Interface Descriptions ................................ ................................ ................................ .........9 
+System Interface List................................ ................................ ................................ .................  11 
+Relationship to Core Use Cases ................................ ................................ .............................  13 
+Overall Menu and Navigation Concept ................................ ................................ ......................  14 
+Main Window Structure ................................ ................................ ................................ ........ 14 
+Top Menu Bar Concept ................................ ................................ ................................ ......... 15 
+Role-Specific Navigation Panels ................................ ................................ ...........................  16 
+Global Menu Architecture (Java GUI) ................................ ................................ .......................  16 
+Final Menu Hierarchy Structure ................................ ................................ ............................  16 
+Traceability to A0 and A1 ................................ ................................ ................................ ...... 20 
+Menu Hierarchy and Navigation Flow ................................ ................................ ...............  20 
+Menu Grouping Table ................................ ................................ ................................ ...............  20 
+Storyboards for Core Use Cases ................................ ................................ ................................  24 
+Storyboard – UC-01 Book Appointment ................................ ................................ ................  24 
+Storyboard – UC-02 Register Patient Information ................................ ................................ . 25 
+Storyboard and Screen Design for UC‑06 – Cancel Appointment ................................ .......... 26 
+Storyboard – UC-07 Make Payment ................................ ................................ ......................  27 
+Storyboard UC‑03 Manage Doctor Schedule ................................ ................................ ......... 28 
+UI/UX Design Guidelines for Java GUI and Figma ................................ ................................ ... 30 
+Visual Theme and Color Palette ................................ ................................ .............................  30 
+
+
+===== PAGE 2 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 2 of 44 
+ 
+Buttons, Forms, and V alidation ................................ ................................ ..............................  31 
+Feedback, Status, and Error Messages ................................ ................................ ...................  32 
+Application to Figma and Java Implementation ................................ ................................ ..... 33 
+Application to Figma Prototypes (UI Screens) ................................ ................................ ... 34 
+Figma Screens (UI01–UI12) ................................ ................................ ................................ ..... 34 
+Authentication ................................ ................................ ................................ .......................  35 
+Figure 1: UI01 – LoginFrame (Figma) ................................ ................................ ...............  35 
+Dashboards ................................ ................................ ................................ ...........................  35 
+Figure 2: UI02 – PatientDashboardFrame (Figma)................................ .............................  35 
+Figure 3: UI03 – ReceptionistDashboardFrame (Figma) ................................ ....................  36 
+Figure 4: UI04 – DoctorDashboardFrame (Figma)................................ .............................  36 
+UC-01 Book Appointment flow ................................ ................................ .............................  37 
+Figure 5: UI05 – BookAppointmentPanel (Figma)................................ .............................  37 
+Figure 6: UI06 – AppointmentDetailsDialog (Figma) ................................ ........................  37 
+UC-02 Register Patient flow ................................ ................................ ................................ .. 38 
+Figure 7: UI08 – PatientSearchDialog (Figma) ................................ ................................ .. 38 
+Figure 8: UI07 – RegisterPatientFormFrame (Figma) ................................ ........................  38 
+UC-03 Manage Doctor Schedule flow ................................ ................................ ...................  39 
+Figure 9: UI09 – DoctorScheduleManagementFrame (Figma) ................................ ........... 39 
+Figure 10: UI09b – Slot Details Open (State V ariant) (Figma) ................................ ........... 39 
+UC-06 Cancel Appointment flow ................................ ................................ ..........................  40 
+Figure 11: UI10 – CancelAppointmentPanel (No Selection State) (Figma) ........................  40 
+Figure 12: UI10a – CancelAppointmentPanel (Row Selected State V ariant) (Figma) ......... 40 
+Figure 13: : UI10a- CancelAppointmentPanel(Confirm Modal) (Figma)............................  41 
+UC-07 Make Payment flow ................................ ................................ ................................ ... 41 
+Figure 14: UI11 – PaymentOverviewFrame (Figma) ................................ .........................  41 
+Figure 15: UI12 – PaymentProcessingDialog (Figma) ................................ .......................  42 
+ 
+Selection of Core Use Cases for User Interface Design 
+We selected five core use cases from the Healthcare Management System: 
+
+
+===== PAGE 3 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 3 of 44 
+ 
+UC‑01 Book appointment 
+UC‑02 Register patient information 
+UC‑03 Manage doctor schedule 
+UC‑06 Cancel appointment 
+UC‑07 Make payment 
+ 
+These use cases were chosen because they: 
+ Cover the primary operational flows of the system (registration, appointment 
+management, and billing). 
+ Involve rich user–system interaction, which is essential for menu design, screen layout, 
+and interaction flow design. 
+ Map directly to the key domain classes identified in Deliverable 3 (Patient, Doctor, 
+Appointment, MedicalRecord, Room, Bill, Prescription). 
+ They are already supported by activity diagrams, system sequence diagrams, and state 
+machines, ensuring traceability between analysis and design. 
+ 
+ UC-01 – Book appointment 
+ Primary actor: Patient 
+ Supporting actors: HealthcareSystem, optionally Receptionist 
+ Brief description: 
+The patient (or the receptionist on behalf of the patient) searches for available doctors 
+and time slots, selects a preferred slot, and submits a booking request. The system 
+validates the slot, reserves the corresponding room/slot, and creates an 
+Appointment. Depending on clinic policy, the system may also initiate pre-payment as 
+part of the booking process. 
+ Rationale for inclusion as a core use case: 
+Booking appointments is central to the healthcare system’s purpose. This use 
+case links several core domain classes (Patient, Doctor, Appointment, Room) 
+and contains non-trivial decision logic (slot availability, alternative proposals, optional 
+pre-payment). It is therefore a key driver for designing intuitive booking screens, filters, 
+and confirmation views in the user interface 
+
+
+===== PAGE 4 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 4 of 44 
+ 
+UC‑02 – Register patient information 
+ Primary actor: Receptionist 
+ Supporting actors: HealthcareSystem 
+ Brief description: 
+ The receptionist opens the patient registration function, enters or updates patient 
+demographic and clinical details, and submits the information. The system validates the 
+data and, on success, creates or updates the corresponding Patient and MedicalRecord 
+entries, returning a confirmation message. In case of invalid data, the system returns 
+detailed validation errors for correction. 
+ Rationale for inclusion as a core use case: 
+ Patient registration is a prerequisite for almost all other operations in the system, 
+including appointment booking, treatment documentation, and billing. This use case 
+exercises form‑based data entry, validation feedback, and usability aspects of the 
+interface. It is directly connected to the core domain classes Patient and MedicalRecord 
+defined in Deliverable 3. 
+ 
+UC-03 – Manage doctor schedule 
+ Primary actor: Doctor 
+ Supporting actors: HealthcareSystem 
+ Brief description: 
+The doctor accesses their schedule, views existing time slots, and performs updates such 
+as adding new availability, blocking time ranges, or modifying existing slots. The 
+system checks for conflicts (e.g., overlapping slots, invalid time ranges) and either 
+applies the changes or returns detailed conflict information for correction. 
+ Rationale for inclusion as a core use case: 
+The availability managed in this use case directly determines which appointment 
+slots can be booked or cancelled. It requires clear visualization of time-based data 
+(e.g., calendars, tables), as well as intuitive editing and conflict-resolution feedback. The 
+use case is tightly connected to the Appointment lifecycle and the scheduling/slot 
+concepts in the domain model. 
+UC‑06 – Cancel appointment 
+ Primary actor: Patient or Receptionist 
+ Supporting actors: HealthcareSystem, NotificationService 
+ Brief description: 
+
+
+===== PAGE 5 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 5 of 44 
+ 
+ The actor selects an upcoming appointment and requests its cancellation. The system 
+evaluates the applicable cancellation policy (for example, whether the request is more 
+than 24 hours before the appointment). If allowed, the system updates the Appointment 
+status (e.g., Cancelled or Late‑cancelled), releases the associated room/slot, and sends 
+notifications to the patient and doctor. If the policy is violated, the system may show 
+warnings or penalties before final confirmation. 
+ Rationale for inclusion as a core use case: 
+ Appointment cancellation is a frequent real‑world operation with important policy rules 
+and side effects. The user interface must support clear appointment selection, explanation 
+of policy constraints, and confirmation dialogs. This use case is closely related to the 
+Appointment lifecycle, resource reuse (Room/slot), and notification behavior. 
+ 
+UC-07 – Make payment 
+ Primary actor: Patient 
+ Supporting actors: HealthcareSystem, external Payment Gateway 
+ Brief description: 
+The patient views a list of unpaid bills, selects a bill to settle, chooses a payment method, 
+and confirms the payment. The HealthcareSystem sends a payment request to the external 
+Payment Gateway and receives an approval or failure response. On approval, the system 
+updates the Bill status to Paid, records transaction details, and shows a 
+success confirmation. On failure, it displays an error message and may offer options to 
+retry or cancel the attempt. 
+ Rationale for inclusion as a core use case: 
+This use case is central to the financial processes of the system. It directly interacts with 
+the Bill class and the Bill lifecycle state machine (PendingPayment, Paid, Failed, 
+Overdue). The user interface must clearly display bill details, payment options, and 
+error/retry behavior. As a result, it provides a strong basis for designing payment screens, 
+confirmation dialogs, and integration feedback forms. 
+ 
+ 
+Assumptions 
+The following assumptions underpin the design decisions in this deliverable: 
+
+
+===== PAGE 6 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 6 of 44 
+ 
+ User Roles: 
+The system supports three primary roles—Patient, Receptionist, and Doctor—each with 
+role-specific dashboards and permissions. 
+ External Service Availability: 
+External integrations (Payment Gateway, Notification Service, Reporting Service, 
+External Patient System) are assumed to be available via secure APIs. If unavailable, the 
+system logs failures and continues the main workflow where safe. 
+ Cancellation Policy: 
+Appointment cancellation is governed by a time-based threshold (e.g., 24 hours), which 
+may trigger warnings or penalties. The UI includes appropriate confirmation dialogs. 
+ Reporting Output: 
+Reports are generated electronically (PDF or Excel format). External distribution requires 
+user consent and audit logging. 
+ Java GUI Target: 
+The user interface is intended to be implemented using Java GUI frameworks (Swing or 
+JavaFX), aligned with the A4 architecture. 
+ Traceability: 
+All UI and system interface designs remain traceable to Deliverable 3 artifacts, including 
+use cases, system sequence diagrams (SSDs), activity diagrams, sequence diagrams, and 
+state machines. 
+ 
+User Interface List for Core Use Cases 
+ 
+UI 
+ID 
+Screen Name (Conceptual 
+Java GUI) 
+Related 
+Use 
+Case(s) 
+Primary 
+Actor(s) 
+Purpose (Short 
+Description) 
+Main Widgets / Contents 
+(Conceptual) 
+UI-0
+1 
+LoginFrame UC-01, 
+UC-02, 
+UC-03, 
+UC-06, UC
+-07 
+Patient, 
+Reception
+ist, Doctor 
+Provide secure access to 
+the system for all 
+human users before they 
+perform any operation. 
+Username and 
+password fields, role 
+selection or auto-detected 
+role, “Login” and “Cancel” 
+buttons, error message area. 
+
+
+===== PAGE 7 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 7 of 44 
+ 
+UI-0
+2 
+PatientDashboardFrame UC-01, 
+UC-06, 
+UC-07 
+Patient Central hub for patients to 
+access booking, upcoming 
+appointments, 
+and billing options. 
+Welcome 
+header, summary cards 
+(next appointment, outstand
+ing bills), 
+navigation buttons/menus f
+or “Book Appointment”, 
+“My 
+Appointments”, “My Bills”. 
+UI-0
+3 
+ReceptionistDashboardFram
+e 
+UC-01, 
+UC-02, UC
+-06 
+Reception
+ist 
+Central hub for 
+receptionists to manage 
+patient registrations 
+and appointments. 
+Navigation menu for 
+“Register 
+Patient”, “Manage Appoint
+ments”, 
+“Search Patient”, table 
+of today’s appointments, 
+quick-action buttons. 
+UI-0
+4 
+DoctorDashboardFrame UC-03 Doctor Central hub for doctors to 
+view and manage 
+their schedule. 
+Calendar or list of today’s 
+appointments, navigation to 
+“Manage Schedule”, 
+filters by 
+date, status indicators. 
+UI-0
+5 
+BookAppointmentPanel UC-01 Patient, 
+Reception
+ist 
+Support searching for 
+doctors and available slots 
+and submitting a booking 
+request. 
+Filters (specialty, date 
+range, doctor), table/list 
+of available slots, 
+slot details area, 
+“Book” button, 
+message/validation area. 
+UI-0
+6 
+AppointmentDetailsDialog UC-01, 
+UC-06 
+Patient, 
+Reception
+ist 
+Show detailed information 
+of a specific appointment 
+and allow context-specific 
+actions (confirm, cancel). 
+Appointment summary 
+(doctor, date/time, 
+room, status), notes area, 
+action buttons (e.g., 
+“Cancel Appointment”, 
+“Close”), policy 
+message area. 
+UI-0
+7 
+RegisterPatientFormFrame UC-02 Reception
+ist 
+Capture new patient 
+information and update 
+existing patient records. 
+Text fields (name, DOB, 
+contact info, insurance 
+details), 
+dropdowns (gender, blood 
+type), text area for medical 
+notes/allergies, “Save” and 
+“Reset” buttons, 
+validation error messages. 
+UI-0
+8 
+PatientSearchDialog UC-02, 
+UC-06, 
+UC-07 
+Reception
+ist 
+Allow searching and 
+selecting an existing 
+patient before registration 
+update, 
+appointment operations, or 
+payment. 
+Search fields (name, 
+ID, phone), results 
+table, selection button, 
+“New Patient” shortcut. 
+
+
+===== PAGE 8 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 8 of 44 
+ 
+UI-0
+9 
+DoctorScheduleManagemen
+tFrame 
+UC-03 Doctor Enable doctors to view, 
+create, modify, 
+and block schedule slots. 
+Calendar or grid view 
+of time slots, controls to 
+add/edit/delete slots, status 
+indicators (available, 
+blocked, reserved), 
+conflict warning area, 
+“Save Changes” button. 
+UI-1
+0 
+CancelAppointmentPanel UC-06 Patient, 
+Reception
+ist 
+List upcoming 
+appointments and support 
+cancellation with 
+policy information. 
+Table of upcoming 
+appointments (date/time, 
+doctor, status), filters (date, 
+status), details preview, 
+“Cancel Selected” 
+button, confirmation 
+dialog with policy text. 
+UI-1
+1 
+PaymentOverviewFrame UC-07 Patient Display a list of 
+unpaid and paid bills 
+for the authenticated 
+patient. 
+Table of bills (ID, date, 
+amount, status), 
+filters (status, date 
+range), total outstanding 
+amount, “Pay Selected Bill” 
+button. 
+UI-1
+2 
+PaymentProcessingDialog UC-07 Patient Guide the user through the 
+payment confirmation flow 
+and show gateway 
+responses. 
+Bill summary area, 
+payment method 
+selection (card, wallet, etc.), 
+input fields for payment 
+details (conceptual), 
+“Confirm Payment” and 
+“Cancel” 
+buttons, status/progress 
+indicator, success or error 
+message area. 
+ 
+ 
+Mapping of User Interfaces to Use Cases 
+ UC-01 Book appointment 
+ LoginFrame (UI-01) 
+ PatientDashboardFrame (UI-02) or ReceptionistDashboardFrame (UI-03) 
+ BookAppointmentPanel (UI-05) 
+ AppointmentDetailsDialog (UI-06) 
+ UC-02 Register patient information 
+
+
+===== PAGE 9 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 9 of 44 
+ 
+ LoginFrame (UI-01) 
+ ReceptionistDashboardFrame (UI-03) 
+ PatientSearchDialog (UI-08) 
+ RegisterPatientFormFrame (UI-07) 
+ UC-03 Manage doctor schedule 
+ LoginFrame (UI-01) 
+ DoctorDashboardFrame (UI-04) 
+ DoctorScheduleManagementFrame (UI-09) 
+ UC-06 Cancel appointment 
+ LoginFrame (UI-01) 
+ PatientDashboardFrame (UI-02) or ReceptionistDashboardFrame (UI-03) 
+ CancelAppointmentPanel (UI-10) 
+ AppointmentDetailsDialog (UI-06) 
+ UC-07 Make payment 
+ LoginFrame (UI-01) 
+ PatientDashboardFrame (UI-02) 
+ PaymentOverviewFrame (UI-11) 
+ PaymentProcessingDialog (UI-12) 
+ 
+User Interface Descriptions 
+UI-01: LoginFrame 
+Authenticates users (Patient / Receptionist / Doctor) and routes them to the correct role 
+dashboard. 
+Includes: username/password inputs, login action, inline error feedback. 
+ 
+UI-02: PatientDashboardFrame 
+
+
+===== PAGE 10 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 10 of 44 
+ 
+Patient home hub providing access to booking, appointments, and billing. 
+Includes: summary cards (next appointment, outstanding balance) and quick navigation. 
+ 
+UI-03: ReceptionistDashboardFrame 
+Receptionist operational hub for registration and appointment management. 
+Includes: quick links (register/search patient, today’s appointments, cancel appointment) and 
+data tables. 
+ 
+UI-04: DoctorDashboardFrame 
+Doctor hub for schedule visibility and schedule-management entry. 
+Includes: today’s schedule snapshot and navigation to Manage My Schedule. 
+ 
+UI-05: BookAppointmentPanel 
+Search and select appointment slots. 
+Includes: filters (specialty, doctor, date), available slots table/list, selection actions, and 
+validation messages. 
+ 
+UI-06: AppointmentDetailsDialog 
+Confirms a selected appointment slot and displays the appointment summary and policies. 
+Includes: confirm/close actions and policy notes. 
+ 
+UI-07: RegisterPatientFormFrame 
+Create or update patient demographics and basic clinical data. 
+Includes: structured form sections, required-field validation, and save/reset actions. 
+ 
+UI-08: PatientSearchDialog 
+Search and select an existing patient record. 
+Includes: search criteria inputs, results table, select action, and New Patient shortcut. 
+ 
+UI-09: DoctorScheduleManagementFrame 
+
+
+===== PAGE 11 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 11 of 44 
+ 
+View and edit doctor availability and blocked time. 
+Includes: calendar/grid view, add/edit/delete slot actions, and conflict/validation feedback. 
+ 
+UI-10: CancelAppointmentPanel 
+Select and cancel upcoming appointments with policy confirmation. 
+Includes: appointments table, filters, selected-row state, and confirmation modal. 
+ 
+UI-11: PaymentOverviewFrame 
+View bills and initiate payment. 
+Includes: bills table (paid/unpaid), filters, totals, and Pay Selected Bill action. 
+ 
+UI-12: PaymentProcessingDialog 
+Confirm payment and display payment gateway results. 
+Includes: bill summary, payment method input, progress indicator, success/failure feedback, and 
+retry/cancel options. 
+System Interface List 
+SI 
+ID 
+Interface 
+Name 
+Type Main Inputs to 
+HealthcareSystem 
+Main Outputs from 
+HealthcareSystem 
+Trigger / 
+Initiation 
+Mechanism 
+SI-
+01 
+System 
+Scheduler 
+Interface 
+Internal 
+schedulin
+g / 
+job trigg
+er 
+Job configuration (e.g., 
+frequency , enabled flags); 
+time events (e.g., daily 
+at 02:00) 
+Job start requests 
+for batch use cases such 
+as Send appointment 
+reminders, Generate 
+weekly report 
+schedule, Generate 
+monthly bill, Clean up 
+expired slots, Update 
+slot availability 
+Time-based 
+triggers 
+(cron-like 
+schedule) 
+configured by 
+an 
+administrator; t
+he 
+scheduler comp
+onent invokes 
+the 
+HealthcareSyste
+m at defined 
+intervals. 
+
+
+===== PAGE 12 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 12 of 44 
+ 
+SI-
+02 
+NotificationSe
+rvice API 
+External 
+service 
+(notificat
+ions) 
+Lists of upcoming or 
+cancelled 
+appointments (patient contact 
+data, doctor contact data, 
+message templates, 
+channels such as email/SMS) 
+Delivery status for each 
+notification (sent, failed, 
+partially delivered; error 
+reasons when 
+applicable) 
+Called by 
+HealthcareSyste
+m during use 
+cases such 
+as Book 
+appointment, Ca
+ncel 
+appointment, 
+and Send 
+appointment 
+reminders. 
+Triggered either 
+by user actions 
+(booking/cancel
+lation) or 
+scheduled jobs 
+(reminder 
+batch). 
+SI-
+03 
+ReportingServi
+ce API 
+External 
+service 
+(report 
+generatio
+n) 
+Aggregated operational data 
+(appointments per period, can
+cellations, revenue/billing 
+summaries, schedule utilizati
+on metrics) and report 
+parameters (date range, report 
+type, format) 
+Generated report 
+artifacts (e.g., 
+PDF/Excel 
+file references, 
+dashboard summaries) 
+and status information 
+(success, partial 
+failure, no data) 
+Initiated by the 
+System Schedul
+er through use 
+cases such 
+as Generate 
+weekly report 
+schedule and 
+other reporting 
+jobs. Triggered 
+on a scheduled 
+basis or on 
+administrator re
+quest. 
+SI-
+04 
+Payment 
+Gateway API 
+External 
+payment 
+service 
+Payment request messages 
+containing bill identifier, 
+amount, currency , 
+patient/payment details, and 
+selected payment method 
+Payment authorization 
+responses (approved, 
+declined, error) includin
+g transaction ID, 
+authorization code, and 
+error messages when 
+applicable 
+Invoked by the 
+HealthcareSyste
+m during Make 
+payment (UC-0
+7) when the 
+patient confirms 
+a 
+payment attemp
+t from the 
+UI. Triggered 
+explicitly by 
+user action. 
+
+
+===== PAGE 13 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 13 of 44 
+ 
+SI-
+05 
+ExternalPatient
+System API 
+External 
+healthcar
+e 
+system / 
+master 
+patient 
+index 
+Patient identifier or matching 
+criteria (e.g., national ID, 
+name + date of birth), 
+optional filter parameters 
+Synchronized patient 
+demographic and 
+clinical data (updated 
+name, address, contact 
+info, allergy flags, etc.), 
+error or conflict details 
+in case of failures 
+Called from 
+the Synchronize 
+patient 
+information ext
+ension use 
+case, usually 
+initiated by the 
+Receptionist fro
+m within the 
+registration or 
+patient search 
+functionality . 
+Triggered on 
+demand. 
+SI-
+06 
+Appointment 
+Slot Maintenan
+ce Interface 
+Internal 
+maintena
+nce job 
+Current schedules, appointme
+nts, and configuration rules 
+for expiry and availability 
+Updated slot statuses 
+(free, reserved, blocked, 
+expired), summary 
+of cleaned-up 
+or adjusted slots 
+Triggered by the 
+System 
+Scheduler via 
+the Clean up 
+expired 
+slots and Updat
+e slot 
+availability mai
+ntenance use 
+cases 
+at configured ti
+mes. 
+SI-
+07 
+Billing Batch 
+Interface 
+Internal 
+batch / 
+billing jo
+b 
+Completed treatments, 
+consultations, and configured 
+billing rules for the target 
+period 
+New or updated Bill 
+records, including 
+calculated amounts and 
+summaries of how many 
+bills were generated; 
+error messages if no 
+billable items are found 
+Triggered by the 
+System 
+Scheduler 
+during the Gene
+rate monthly 
+bill use 
+case, typically 
+at the end of a 
+billing period. 
+ 
+Relationship to Core Use Cases 
+ UC-01 Book appointment and UC-06 Cancel appointment 
+ Use the NotificationService API (SI-02) to send confirmations and cancellation 
+messages. 
+ Indirectly depend on Appointment Slot Maintenance (SI-06) to keep slot 
+statuses consistent. 
+
+
+===== PAGE 14 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 14 of 44 
+ 
+ UC-02 Register patient information 
+ May invoke the ExternalPatientSystem API (SI-05) to synchronize patient 
+records when required. 
+ UC-03 Manage doctor schedule 
+ Produces schedule data that is consumed by System Scheduler 
+(SI-01) and Appointment Slot Maintenance (SI-06) for batch processing and 
+slot cleanup. 
+ UC-07 Make payment 
+ Directly integrates with the Payment Gateway API (SI-04) to authorize and 
+record financial transactions. 
+ Its results are later summarized by Billing Batch Interface (SI-07) and may be 
+included in reports produced via ReportingService API (SI-03). 
+ 
+Overall Menu and Navigation Concept 
+The user interface of the Healthcare Management System follows a role-based main window 
+with a shared top menu bar and contextual navigation panels. The goal is to 
+provide a consistent structure for all actors (Patient, Receptionist, Doctor) while keeping 
+frequently used tasks easily accessible for each role. 
+Main Window Structure 
+After successful login via LoginFrame, the system opens a role-specific dashboard frame: 
+ PatientDashboardFrame for patients 
+ ReceptionistDashboardFrame for receptionists 
+ DoctorDashboardFrame for doctors 
+Each dashboard is implemented as a main window that contains: 
+ A top menu bar with global menus (e.g., Home, Appointments, Patients, Billing, Help). 
+ A left side navigation panel (or tab bar) showing shortcuts to the most relevant 
+functions for that role. 
+ A central content area where panels such 
+as BookAppointmentPanel, RegisterPatientFormFrame, DoctorScheduleManagementFra
+me, or PaymentOverviewFrame are displayed. 
+
+
+===== PAGE 15 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 15 of 44 
+ 
+This layout allows the application to maintain a uniform structure while customizing the 
+available tasks and labels to each actor. 
+ 
+Top Menu Bar Concept 
+The top menu bar provides a consistent global navigation for all authenticated users. The 
+following conceptual menu categories are defined: 
+ Home 
+ Dashboard (patient, receptionist, doctor) 
+ Profile / Logout 
+ Appointments 
+ Book Appointment (UC-01) 
+ My Appointments (view/modify) 
+ Cancel Appointment (UC-06) 
+ Patients (primarily visible to Receptionist and Doctor) 
+ Register Patient (UC-02) 
+ Search / View Patient 
+ Synchronize Patient Information (extension use case) 
+ Schedule (primarily visible to Doctor) 
+ Manage Doctor Schedule (UC-03) 
+ View Today’s Schedule 
+ Billing (primarily visible to Patient and administrative staff) 
+ View My Bills (UC-07) 
+ Make Payment (UC-07) 
+ Billing History 
+ Reports / Maintenance (administrative / scheduler functions) 
+ Generate Weekly Operational Reports 
+ Generate Monthly Bills 
+ Run Maintenance Jobs (e.g., Clean Up Expired Slots, Update Slot Availability) 
+
+
+===== PAGE 16 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 16 of 44 
+ 
+ Help 
+ User Guide 
+ Contact Support 
+ About 
+Each menu item opens the corresponding panel or frame in the central content area (for 
+example, selecting “Book Appointment” loads BookAppointmentPanel inside the patient 
+dashboard). 
+Role-Specific Navigation Panels 
+In addition to the top menu bar, a role-specific navigation panel is provided on the left side: 
+ PatientDashboardFrame 
+ Quick links: “Book Appointment”, “My Appointments”, “My Bills”, “Make 
+Payment Now”. 
+ Summary widgets: next appointment, outstanding balance. 
+ ReceptionistDashboardFrame 
+ Quick links: “Register New Patient”, “Search Patient”, “Today’s 
+Appointments”, “Cancel Appointment”. 
+ Summary widgets: number of appointments today, pending registrations. 
+ DoctorDashboardFrame 
+ Quick links: “Today’s Schedule”, “Manage My Schedule”, “Pending Discharges” 
+(if needed). 
+ Summary widgets: number of appointments today, schedule utilization overview. 
+This dual navigation concept (top menu + side shortcuts) reduces click depth for frequent tasks 
+while keeping the information architecture coherent across the system. 
+Global Menu Architecture (Java GUI) 
+ Final Menu Hierarchy Structure 
+The final menu hierarchy is defined below. Visibility of some menus is role-dependent, but the 
+overall structure remains consistent across dashboards. 
+1. Top-Level Menus and Items (JMenu / JMenuItem) 
+
+
+===== PAGE 17 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 17 of 44 
+ 
+ Home (JMenu) 
+ Dashboard (JMenuItem) 
+ Loads the appropriate role-specific dashboard content into the central 
+panel (PatientDashboardFrame, ReceptionistDashboardFrame, 
+or DoctorDashboardFrame). 
+ Profile (JMenuItem) 
+ Opens a simple profile/settings view for the logged-in user. 
+ Logout (JMenuItem) 
+ Returns the user to LoginFrame and disposes of the current dashboard 
+frame. 
+ Appointments (JMenu) 
+ Book Appointment (JMenuItem) – UC-01 
+ For Patient: loads BookAppointmentPanel inside PatientDashboardFrame. 
+ For Receptionist: loads BookAppointmentPanel (configured for 
+receptionist use) inside ReceptionistDashboardFrame. 
+ My Appointments (JMenuItem) 
+ For Patient: shows a list/table of the patient’s upcoming and past 
+appointments (internally a panel using data from Appointment). 
+ Cancel Appointment (JMenuItem) – UC-06 
+ For Patient: 
+loads CancelAppointmentPanel inside PatientDashboardFrame. 
+ For Receptionist: 
+loads CancelAppointmentPanel inside ReceptionistDashboardFrame. 
+ (Optional) Appointment Details (JMenuItem) 
+ Opens AppointmentDetailsDialog for a selected appointment from a list. 
+ Patients (JMenu) (visible primarily to Receptionist and Doctor) 
+ Register Patient (JMenuItem) – UC-02 
+ Loads RegisterPatientFormFrame content 
+inside ReceptionistDashboardFrame central panel. 
+ Search / View Patient (JMenuItem) 
+
+
+===== PAGE 18 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 18 of 44 
+ 
+ Opens PatientSearchDialog for locating a patient and viewing their basic 
+information. 
+ Synchronize Patient Information (JMenuItem) 
+ Invokes the ExternalPatientSystem API (SI-05) from a dedicated panel or 
+dialog, reflecting the synchronization extension use case. 
+ Schedule (JMenu) (visible primarily to Doctor) 
+ Manage My Schedule (JMenuItem) – UC-03 
+ Loads DoctorScheduleManagementFrame (or panel) 
+inside DoctorDashboardFrame. 
+ View Today’s Schedule (JMenuItem) 
+ Shows a read-only view (table or calendar) of today’s appointments for 
+the current doctor. 
+ Billing (JMenu) (visible to Patients and appropriate staff) 
+ View My Bills (JMenuItem) – UC-07 
+ Loads PaymentOverviewFrame content into the patient’s central panel, 
+listing unpaid and paid bills. 
+ Make Payment (JMenuItem) – UC-07 
+ Opens PaymentProcessingDialog for the bill selected 
+in PaymentOverviewFrame. 
+ Billing History (JMenuItem) 
+ Shows a list of past payments and bills for auditing and review. 
+ Reports / Maintenance (JMenu) (primarily for admin/scheduler roles) 
+ Generate Weekly Operational Reports (JMenuItem) 
+ Triggers UI to request a reporting period and forwards 
+to ReportingService API (SI-03). 
+ Generate Monthly Bills (JMenuItem) 
+ Initiates the Billing Batch Interface (SI-07), reflecting the Generate 
+monthly bill use case. 
+ Run Maintenance Jobs (JMenuItem) 
+
+
+===== PAGE 19 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 19 of 44 
+ 
+ Opens a maintenance panel where an administrator can manually trigger 
+tasks like Clean up expired slots and Update slot availability (SI-06). 
+ Help (JMenu) 
+ User Guide (JMenuItem) 
+ Contact Support (JMenuItem) 
+ About (JMenuItem) 
+2. Role-Specific Side Navigation Panels (JPanel) 
+In addition to the JMenuBar, each dashboard frame contains a side navigation 
+panel implemented as a JPanel with JButton or icon buttons: 
+ PatientDashboardFrame – Quick Actions 
+ Book Appointment → opens BookAppointmentPanel 
+ My Appointments → opens patient appointments list 
+ My Bills → opens PaymentOverviewFrame content 
+ Make Payment Now → opens PaymentProcessingDialog for selected bill 
+ ReceptionistDashboardFrame – Quick Actions 
+ Register New Patient → opens RegisterPatientFormFrame content 
+ Search Patient → opens PatientSearchDialog 
+ Today’s Appointments → shows today’s appointment list 
+ Cancel Appointment → opens CancelAppointmentPanel 
+ DoctorDashboardFrame – Quick Actions 
+ Today’s Schedule → shows today’s schedule view 
+ Manage My Schedule → opens DoctorScheduleManagementFrame 
+ (Optional) Pending Discharges or other doctor-specific tasks 
+These quick-access buttons are consistent with the corresponding JMenuItem actions, but 
+provide fewer clicks for the most frequent tasks. 
+ 
+
+
+===== PAGE 20 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 20 of 44 
+ 
+Traceability to A0 and A1 
+ The menu categories and items are derived directly from the five core use 
+cases (UC-01, UC-02, UC-03, UC-06, UC-07) defined in A0. 
+ Each significant menu item maps to one or more user interfaces from the UI list in A1 
+(e.g., Book Appointment → BookAppointmentPanel, View My 
+Bills → PaymentOverviewFrame). 
+ This architecture ensures that Andrew can build a menu grouping table, Yassin can draw 
+a UML use case–menu diagram, and all team members can design storyboards and 
+Figma screens that are consistent with the final Java menu/navigation structure. 
+ 
+Menu Hierarchy and Navigation Flow 
+ 
+Menu Grouping Table 
+The following menu grouping table maps the five core use cases to menu categories, user roles, 
+and frequency of use: 
+ 
+
+
+
+===== PAGE 21 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 21 of 44 
+ 
+Use 
+Cas
+e ID 
+Use Case 
+Name 
+Menu 
+Category 
+(Top Menu) 
+Sub-Option / Screen Primary 
+Role(s) 
+Frequenc
+y of Use 
+Rationale for 
+Grouping 
+UC-
+01 
+Book 
+appointme
+nt 
+Appointment
+s 
+Book Appointment → 
+BookAppointmentPanel 
+Patient, 
+Receptioni
+st 
+High Booking is a 
+core 
+appointment 
+operation, so 
+it is grouped 
+under the 
+Appointment
+s menu for 
+quick access 
+by both 
+Patients and 
+Receptionists
+. It is one of 
+the most 
+frequent 
+tasks in daily 
+work. 
+
+
+===== PAGE 22 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 22 of 44 
+ 
+UC-
+02 
+Register 
+patient 
+informatio
+n 
+Patients Register Patient → 
+RegisterPatientFormFrame 
+Receptioni
+st 
+Medium–
+High 
+Registration 
+is primarily 
+performed by 
+Receptionists 
+and directly 
+concerns 
+patient 
+records, so it 
+is grouped 
+under 
+Patients. 
+UC-
+03 
+Manage 
+doctor 
+schedule 
+Schedule Manage My Schedule → 
+DoctorScheduleManagementFra
+me 
+Doctor Medium Managing 
+schedules is 
+performed by 
+Doctors and 
+directly 
+affects 
+appointment 
+slot 
+availability . 
+It is logically 
+grouped 
+under 
+Schedule to 
+separate it 
+from patient-
+oriented 
+appointment 
+tasks. 
+
+
+===== PAGE 23 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 23 of 44 
+ 
+UC-
+06 
+Cancel 
+appointme
+nt 
+Appointment
+s 
+Cancel Appointment → 
+CancelAppointmentPanel 
+Patient, 
+Receptioni
+st 
+Medium–
+High 
+Cancelling 
+appointments 
+is also 
+appointment-
+centric, so it 
+is grouped 
+under 
+Appointment
+s. It is 
+regularly 
+accessed 
+when 
+patients 
+change plans 
+or when 
+cancellation 
+policies 
+apply . 
+UC-
+07 
+Make 
+payment 
+Billing Make Payment → 
+PaymentProcessingDialog (from 
+PaymentOverviewFrame) 
+Patient Medium Payment 
+actions focus 
+on financial 
+operations 
+and invoices 
+rather than 
+scheduling. 
+Therefore 
+they are 
+grouped 
+under 
+Billing. 
+ 
+This grouping ensures that frequently used operations (e.g., Book Appointment, Make Payment) 
+are easily accessible from the top-level menu, while administrative and maintenance tasks are 
+grouped under "Reports / Maintenance". 
+ 
+ 
+
+
+===== PAGE 24 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 24 of 44 
+ 
+Storyboards for Core Use Cases 
+The following storyboards describe the user interaction flow for five core use cases. Each 
+storyboard step corresponds to a concrete Java GUI event (menu selection, button click, table 
+row selection, or dialog confirmation). 
+ 
+ 
+Storyboard – UC-01 Book Appointment 
+1. Login 
+ The patient logs in using LoginFrame. 
+ On successful authentication, the system opens PatientDashboardFrame. 
+2. Open Booking 
+ The user selects Appointments → Book Appointment from the main menu 
+—or— clicks the Book Appointment quick-action tile. 
+ The system loads BookAppointmentPanel inside the dashboard. 
+3. Search for Slots 
+ In BookAppointmentPanel, the user sets search filters (specialty, doctor, date, etc.) 
+and clicks Search. 
+ The system retrieves and displays matching available slots in a table/list. 
+4. Select Slot 
+ The user selects a slot row and clicks Book. 
+ The system validates that the slot is still available and opens AppointmentDetailsDialog. 
+5. Confirm Booking 
+ Inside AppointmentDetailsDialog, the user reviews appointment details 
+(doctor, date/time, room, policies) and clicks Confirm Booking. 
+ The system creates the Appointment and reserves the selected slot. 
+6. Return 
+ The system returns to PatientDashboardFrame. 
+ The next upcoming appointment summary is refreshed to show the new booking. 
+
+
+===== PAGE 25 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 25 of 44 
+ 
+Storyboard – UC-02 Register Patient Information 
+1. Login 
+• The receptionist logs in using LoginFrame (UI-01). 
+• Upon successful authentication, the system opens ReceptionistDashboardFrame (UI-
+03). 
+2. Open Patient Registration 
+• From ReceptionistDashboardFrame, the receptionist selects Patients → Register 
+Patient from the top menu (A4) 
+—or— clicks Register New Patient from Quick Actions. 
+• The system opens RegisterPatientFormFrame (UI-07). 
+3. (Optional) Search Existing Patient 
+• If updating an existing record, the receptionist opens PatientSearchDialog (UI-08). 
+• The receptionist enters search criteria (name, national ID, or phone number). 
+• The receptionist selects a patient from the results. 
+• The system loads the selected patient details into RegisterPatientFormFrame for 
+editing. 
+4. Enter Patient Data 
+• The receptionist enters or updates patient information, including: 
+o Demographics 
+o Contact details 
+o Insurance information 
+o Basic medical information 
+• Mandatory fields are clearly marked with an asterisk (*). 
+5. Validate and Submit 
+• The receptionist clicks Save Patient. 
+• The system validates the input, including: 
+o Missing required fields 
+o Invalid date formats 
+o Duplicate national ID 
+• If validation fails: 
+o The relevant field is highlighted in red (#E53935) 
+o An inline error message is displayed (e.g., “Please enter a valid date of birth.”) 
+o All entered data is preserved for correction 
+• If validation succeeds: 
+o The system creates or updates the Patient and MedicalRecord 
+o A success message is shown in green (#43A047): “Patient saved successfully.” 
+
+
+===== PAGE 26 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 26 of 44 
+ 
+6. (Optional) Synchronize with External System 
+• If configured, the receptionist selects Synchronize Patient Information. 
+• The system calls SI-05 ExternalPatientSystem API to retrieve matching demographic 
+and clinical data. 
+• If the external system is unavailable: 
+o The failure is logged 
+o A non-blocking message is displayed 
+o Local patient data remains saved and usable 
+7. Return 
+• The system returns to ReceptionistDashboardFrame (UI-03). 
+• The receptionist may proceed with appointment booking, billing, or other tasks using 
+the saved patient record. 
+ 
+ 
+Storyboard and Screen Design for UC‑06 – Cancel Appointment 
+1. Login 
+ The user logs in using LoginFrame. 
+ Upon successful authentication, the system opens the appropriate dashboard 
+(PatientDashboardFrame or ReceptionistDashboardFrame). 
+2. Open Cancel Appointment 
+ The user selects Appointments → Cancel Appointment from the main menu 
+—or— clicks the Cancel Appointment quick-action tile. 
+ The system loads CancelAppointmentPanel (UI10) inside the dashboard. 
+3. Filter Appointments 
+ In CancelAppointmentPanel, the user applies filters such as date range and status 
+(e.g., Upcoming, Confirmed). 
+ The system retrieves and displays the matching appointments in a structured table 
+with status tags/chips. 
+4. Select Appointment 
+ The user selects an appointment row from the table. 
+ The system displays a Selected Appointment summary card, including key details 
+and cancellation policy notes. 
+
+
+===== PAGE 27 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 27 of 44 
+ 
+5. Initiate Cancellation 
+ The user clicks Cancel Selected Appointment (red destructive-action button). 
+ The system opens ConfirmCancellationDialog to prevent accidental cancellations 
+and displays policy warnings (e.g., “Cancelling within 24 hours may incur a 
+penalty.”). 
+6. Confirm Cancellation 
+ Inside ConfirmCancellationDialog, the user clicks Confirm Cancellation. 
+ The system validates the request, updates the appointment status, releases the slot, 
+and sends cancellation notifications (via SI02). 
+7. Return 
+ The system closes the dialog and reloads CancelAppointmentPanel with updated 
+data. 
+ The dashboard's upcoming appointments section is refreshed to reflect the 
+cancellation. 
+ 
+ 
+Storyboard – UC-07 Make Payment 
+1. Login 
+ The patient logs in using LoginFrame. 
+ The system opens PatientDashboardFrame. 
+2. Open Billing 
+ From PatientDashboardFrame, the user selects Billing → View My Bills 
+—or— clicks a My Bills quick link. 
+ The system loads PaymentOverviewFrame. 
+3. Select a Bill 
+ In PaymentOverviewFrame, the user may apply filters if needed. 
+ The user selects an unpaid bill, enabling the Pay Selected Bill action. 
+4. Start Payment 
+ The user clicks Pay Selected Bill. 
+
+
+===== PAGE 28 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 28 of 44 
+ 
+ The system opens PaymentProcessingDialog, showing the bill details. 
+5. Confirm Payment 
+ In PaymentProcessingDialog, the user selects a payment method, enters any required 
+data, 
+and clicks Confirm Payment. 
+ The system calls the external Payment Gateway and displays progress. 
+6. Result 
+ If payment succeeds: 
+o A success message is shown in the dialog. 
+o The bill is marked Paid, and the transaction is recorded. 
+ If payment fails: 
+o An error message is displayed with options to retry or cancel. 
+ Upon closing the dialog, PaymentOverviewFrame refreshes the bill list and totals. 
+  Storyboard UC‑03 Manage Doctor Schedule 
+ 
+1. Login 
+ The doctor logs in using LoginFrame (UI-01). 
+ The system opens DoctorDashboardFrame (UI-04). 
+ 
+2. Open Manage Schedule 
+ From DoctorDashboardFrame, the doctor selects Schedule → Manage My Schedule 
+from the top menu (A4), 
+or clicks the Manage My Schedule quick action. 
+ The system opens DoctorScheduleManagementFrame (UI-09). 
+ 
+3. View Current Schedule 
+ In DoctorScheduleManagementFrame, the doctor views a calendar or grid of time 
+slots. 
+ Each slot is clearly marked as: 
+
+
+===== PAGE 29 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 29 of 44 
+ 
+o Available 
+o Booked 
+o Blocked 
+ The doctor may: 
+o Change the displayed week 
+o Apply filters (date range, view mode) 
+ 
+4. Add Availability Slot 
+ The doctor clicks Add New Slot. 
+ The system opens a modal dialog to enter: 
+o Date 
+o Time range 
+o Room 
+o Optional recurrence 
+ The doctor confirms the entry. 
+ The system validates the slot for: 
+o Correct time range 
+o Overlap with existing slots 
+o Room and time conflicts 
+If validation succeeds: 
+ The slot is created and displayed as Available. 
+If validation fails: 
+ An inline error message is displayed 
+(e.g., “Overlapping slot exists. Please choose another time.”). 
+ Entered data is preserved. 
+ 
+5. Block Time (Unavailability) 
+
+
+===== PAGE 30 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 30 of 44 
+ 
+ The doctor clicks Block Time. 
+ The doctor selects a date/time range and provides a reason 
+(e.g., meeting, vacation). 
+ The system checks for existing booked appointments in the selected range. 
+If no booked appointments exist: 
+ The time range is blocked and displayed as Blocked. 
+If booked appointments exist: 
+ A warning message is displayed. 
+ The doctor must explicitly confirm before cancelling or rescheduling appointments. 
+ 
+6. Save Changes 
+ The doctor clicks Save Changes. 
+ The system displays a confirmation message indicating the schedule was updated 
+successfully. 
+ The updated schedule becomes the authoritative source for future appointment bookings. 
+ 
+ 
+ 
+UI/UX Design Guidelines for Java GUI and Figma 
+This section defines the common visual and interaction guidelines for both the Java-based 
+graphical user interface and the Figma prototypes of the Healthcare Management System. The 
+goal is to ensure that all screens and storyboards produced by different team members 
+remain visually consistent, usable, and aligned with the clinical context of the system. 
+Visual Theme and Color Palette 
+Overall Theme 
+ The application uses a light theme with high contrast and a clean, minimalist layout 
+suitable for healthcare environments. 
+ Screens should avoid visual clutter and prioritize readability and clarity over decorative 
+elements. 
+
+
+===== PAGE 31 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 31 of 44 
+ 
+Color Palette 
+ Primary color: 
+ Medical blue, e.g., #1E88E5. 
+ Usage: primary buttons (e.g., “Save”, “Confirm Payment”), selected menu items, 
+key highlights and links. 
+ Secondary color: 
+ Neutral dark gray, e.g., #424242. 
+ Usage: labels, secondary buttons, icons, borders, and non-critical elements. 
+ Accent colors for feedback: 
+ Success: Green, e.g., #43A047. 
+ Usage: success messages (“Appointment booked”, “Payment completed”), 
+success icons or checkmarks. 
+ Error / Warning: Red, e.g., #E53935. 
+ Usage: validation errors, important warnings (late cancellation penalties, 
+payment failures), error icons. 
+ Backgrounds: 
+ Main window background: light gray or off-white, e.g., #F5F5F5. 
+ Content panels, cards, and dialogs: white, #FFFFFF. 
+ Tables and forms may use subtle zebra striping or light borders to separate rows 
+without heavy lines. 
+ Buttons, Forms, and V alidation 
+Button Styles 
+ Primary buttons: 
+ Background: primary blue (#1E88E5). 
+ Foreground: white. 
+ Used for the main action on the screen: “Save”, “Book Appointment”, “Confirm 
+Payment”. 
+ Only one primary button per main action area when possible. 
+ Secondary buttons: 
+
+
+===== PAGE 32 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 32 of 44 
+ 
+ Background: light gray or white with border. 
+ Foreground: dark gray. 
+ Used for actions like “Cancel”, “Back”, “Reset Form”. 
+ Destructive actions (e.g., “Cancel Appointment”): 
+ Background: red (#E53935) or text in red with clear warning icon. 
+ Require confirmation dialogs for irreversible actions. 
+Form Fields and Validation 
+ All input fields should have: 
+ Clear, non-ambiguous labels. 
+ Mandatory fields marked with an asterisk () and explained in a small legend 
+(“ required”). 
+ Validation behavior: 
+ When invalid input is submitted: 
+ The specific field is highlighted (e.g., red border). 
+ A short message is shown near the field (e.g., “Please enter a valid date”). 
+ A general error summary may appear at the top of the form if multiple 
+fields are invalid. 
+ Examples: 
+ On RegisterPatientFormFrame, missing name or invalid date of birth should 
+highlight those fields and show concise hints. 
+ On PaymentProcessingDialog, invalid card data or missing method should result 
+in clear error messages. 
+ Feedback, Status, and Error Messages 
+ Success messages: 
+ Use green text or icons with concise content. 
+ Examples: “Appointment booked successfully.”, “Payment completed.” 
+ Info/warning messages: 
+ Use neutral or orange/yellow warning styles for non-fatal issues. 
+
+
+===== PAGE 33 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 33 of 44 
+ 
+ Example: “Cancelling within 24 hours may incur a penalty.” 
+ Error messages: 
+ Use red color and explicit wording: 
+ Example: “Payment failed. Please check your card details or try again 
+later.” 
+ Where relevant, explain the next step: retry, choose another slot, contact support. 
+ Loading and progress indicators: 
+ For operations that call external services (Payment Gateway, NotificationService, 
+ReportingService): 
+ Show a spinner, progress bar, or “Processing…” label. 
+ Prevent multiple repeated clicks during processing. 
+Application to Figma and Java Implementation 
+ In Figma: 
+ Use consistent components for buttons, text fields, and dialog layouts following 
+the above rules. 
+ Define shared styles for colors (Primary, Secondary, Success, Error) and text 
+styles (Title, Subtitle, Body, Caption). 
+ All storyboards and UI screens for UC-01, UC-02, UC-03, UC-06, and UC-07 
+should reuse these components and styles. 
+ In Java (Swing/JavaFX): 
+ Mirror the Figma design in: 
+ Color constants, fonts, and margins. 
+ Panel layouts 
+(e.g., BorderLayout/GridBagLayout/VBox/HBox equivalents). 
+ The visual structure and interaction flow of each implemented screen 
+(e.g., LoginFrame, BookAppointmentPanel, DoctorScheduleManagementFrame, 
+PaymentOverviewFrame) should be clearly traceable back to its corresponding 
+Figma design. 
+
+
+===== PAGE 34 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 34 of 44 
+ 
+Application to Figma Prototypes (UI Screens) 
+To ensure consistency with the UI/UX guidelines (A5), each user interface identified in A1 has a 
+corresponding Figma prototype. These prototypes serve as high-fidelity mockups for the future 
+Java GUI implementation and illustrate layout, navigation, validation feedback, and modal 
+interactions. 
+Implemented Figma Screens 
+ UI01 – LoginFrame 
+ UI02 – PatientDashboardFrame 
+ UI03 – ReceptionistDashboardFrame 
+ UI04 – DoctorDashboardFrame 
+ UI05 – BookAppointmentPanel 
+ UI06 – AppointmentDetailsDialog 
+ UI07 – RegisterPatientFormFrame 
+ UI08 – PatientSearchDialog 
+ UI09 – DoctorScheduleManagementFrame (including Slot Details state) 
+ UI10 – CancelAppointmentPanel (including Row Selected and Confirm Cancellation 
+modal states) 
+ UI11 – PaymentOverviewFrame 
+ UI12 – PaymentProcessingDialog 
+Figma Screens (UI01–UI12) 
+Link to our Figma page: 
+https://www.figma.com/make/j2K7dM1Q5fVU8wwvharRq4/Healthcare-Management-System-
+Screens?node-id=0-4&t=donGXT4pOZiy8V7F-1 
+ 
+
+
+===== PAGE 35 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 35 of 44 
+ 
+Authentication 
+Figure 1: UI01 – LoginFrame (Figma) 
+ 
+ 
+Dashboards 
+Figure 2: UI02 – PatientDashboardFrame (Figma) 
+ 
+ 
+
+
+
+===== PAGE 36 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 36 of 44 
+ 
+Figure 3: UI03 – ReceptionistDashboardFrame (Figma) 
+ 
+ 
+Figure 4: UI04 – DoctorDashboardFrame (Figma) 
+ 
+ 
+
+
+
+===== PAGE 37 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 37 of 44 
+ 
+UC-01 Book Appointment flow 
+Figure 5: UI05 – BookAppointmentPanel (Figma) 
+ 
+ 
+Figure 6: UI06 – AppointmentDetailsDialog (Figma) 
+ 
+ 
+
+
+
+===== PAGE 38 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 38 of 44 
+ 
+UC-02 Register Patient flow 
+Figure 7: UI08 – PatientSearchDialog (Figma) 
+ 
+ 
+Figure 8: UI07 – RegisterPatientFormFrame (Figma) 
+ 
+ 
+
+
+
+===== PAGE 39 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 39 of 44 
+ 
+UC-03 Manage Doctor Schedule flow 
+Figure 9: UI09 – DoctorScheduleManagementFrame (Figma) 
+ 
+ 
+Figure 10: UI09b – Slot Details Open (State Variant) (Figma) 
+ 
+ 
+
+
+
+===== PAGE 40 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 40 of 44 
+ 
+UC-06 Cancel Appointment flow 
+Figure 11: UI10 – CancelAppointmentPanel (No Selection State) (Figma) 
+ 
+ 
+Figure 12: UI10a – CancelAppointmentPanel (Row Selected State Variant) 
+(Figma) 
+ 
+ 
+
+
+
+===== PAGE 41 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 41 of 44 
+ 
+Figure 13: : UI10a- CancelAppointmentPanel(Confirm Modal) (Figma) 
+ 
+ 
+UC-07 Make Payment flow 
+Figure 14: UI11 – PaymentOverviewFrame (Figma) 
+ 
+ 
+
+
+
+===== PAGE 42 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 42 of 44 
+ 
+Figure 15: UI12 – PaymentProcessingDialog (Figma) 
+ 
+ 
+ 
+Jira Management 
+ 
+
+
+
+===== PAGE 43 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 43 of 44 
+ 
+ 
+ 
+ 
+
+
+
+===== PAGE 44 =====
+
+Introduction to software engineering project 
+Deliverable four 
+Page 44 of 44 
+ 
+Github 
+https://github.com/Adhams01/Introduction-To-Software-Engineering-Project 
+ 

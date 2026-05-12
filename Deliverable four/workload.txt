@@ -1,0 +1,231 @@
+
+
+===== PAGE 1 =====
+
+Adham (Leader – Java GUI architecture + hardest parts) 
+ A0 – Confirm 5 Core Use Cases 
+ Final choice of the 5 core use cases from your previous diagrams. 
+ Output: short list + 1–2 lines description each. 
+ Everyone else’s work depends on this. 
+ 
+Part 1 – Identify User and System Interfaces 
+ A1 – Final User Interface List (Conceptual, not code) 
+ For each of the 5 use cases: define which screens / GUIs are needed. 
+ Example (for Java): LoginFrame, AdminDashboardPanel, etc. 
+ Output: table of UIs with purpose and main widgets. 
+ Depends on A0. 
+ Many tasks below depend on A1. 
+ A2 – Final System Interface List 
+ Identify all system interfaces: 
+ External systems, APIs, sensors (if any), external DBs, automated 
+feeds. 
+ Output: table with interface name, type, input, output, trigger. 
+ Depends on A0. 
+ Ahmed’s system-interface detailing depends on A2. 
+ A3 – Technical Report Integration (Part 1) 
+ Write/merge the Part 1 section of the PDF: 
+ Explain how you chose the use cases. 
+ Include consolidated UI & system interface tables. 
+ Depends on A1, A2, and reviews from others. 
+ 
+Part 2 – User Interface Design (Menus, Storyboards, Java GUI view) 
+
+
+===== PAGE 2 =====
+
+ A4 – Global Menu Architecture (Java GUI) 
+ Define main menu navigation concept: 
+ e.g., main window with menu bar, side navigation, tabbed panes, 
+etc. 
+ Output: 
+ Description of how menus map to Java components 
+(JMenuBar, JMenu, main frames, etc.). 
+ Finalized menu hierarchy structure. 
+ Depends on A1 and A0. 
+ (Andrew’s menu table refinement, Yassin’s menu diagram, and everyone’s 
+Figma/storyboards depend on A4.) 
+ A5 – UI/UX Design Guidelines for Java + Figma 
+ Choose common style: colors, fonts, spacing, button styles, error 
+messages. 
+ Output: 1–2 page design guideline referenced by everyone. 
+ No hard dependency, but should be done early. 
+ (Ahmed, Andrew, Yassin Figma screens depend on A5 to keep 
+consistency.) 
+ A6 – Most Complex Figma Screens 
+ Design in Figma the most complex screens (e.g., dashboard or multi-
+step form) that will then be translated to Java GUI later. 
+ Depends on A1 and A5, and should be consistent with A4. 
+ A7 – Review & Approve All Storyboards and Figma Screens 
+ Check that every storyboard and screen matches: 
+ The use cases. 
+ Activity/sequence diagrams. 
+ Java GUI architecture (menu, flows). 
+ Depends on: Andrew’s, Ahmed’s, and Yassin’s storyboards and Figma 
+(tasks B2–B4, C2–C3, D2–D3). 
+
+
+===== PAGE 3 =====
+
+ A8 – Technical Report Integration (Part 2) 
+ Write Part 2 in the PDF: 
+ Menu design section. 
+ Storyboard descriptions. 
+ UI screen descriptions, with references to Java GUI decisions. 
+ Depends on A4–A7. 
+ 
+Part 3 – System Interface Design (Reports) 
+ A9 – Complex Internal Report Design 
+ Design 1 complex internal electronic report (for internal users): 
+ e.g., Java-generated management report/dashboard. 
+ Output: structure, fields, filters, mockup. 
+ Depends on A2 and A0. 
+ A10 – Complex External Report Design 
+ Design 1 complex external report (for external users/system). 
+ Output: structure, fields, format (PDF, CSV, etc.). 
+ Depends on A2 and A0. 
+ A11 – Technical Report Integration (Part 3) 
+ Describe all 4 reports (2 internal + 2 external) and how they will 
+be implemented in Java (high-level). 
+ Depends on B5, C4, and A9–A10. 
+ 
+Andrew 
+Part 1 
+ B1 – Draft User Interface Descriptions for 2–3 Use Cases 
+ For 2–3 of the 5 use cases: propose which Java screens/panels are 
+needed and their role. 
+ Depends on A0. 
+
+
+===== PAGE 4 =====
+
+ Will be reviewed and finalized in A1. 
+Part 2 
+ B2 – Menu Grouping Table (Draft) 
+ Create the table that maps the 5 use cases to menu categories: 
+ Columns: Use Case, Menu Category, User Role, Frequency, Notes. 
+ Depends on A0 and partially on B1. 
+ Adham uses this while doing A4; then you refine after A4. 
+ B3 – Storyboards for 2 Use Cases 
+ Create 2 storyboards (tool of your choice) for 2 selected use cases. 
+ The steps should match what later becomes Java GUI screens and 
+events. 
+ Depends on A0 and A1 (so you know which screens exist) and A4 (final 
+navigation idea). 
+ B4 – Figma Screens for 2 UIs 
+ Implement 2 Figma screens for the UIs you documented in B1/B3. 
+ Align with Adham’s style guide (A5). 
+ Depends on A1, A4, and A5. 
+Part 3 
+ B5 – Simple Internal Electronic Output Report 
+ Design 1 simpler internal report (e.g., list, table). 
+ Depends on A2 and A0; integrated later by Adham in A11. 
+ 
+Ahmed 
+Part 1 
+ C1 – Detailed System Interface Specifications 
+ From A2, take some interfaces and document them deeply: 
+ Data fields, direction, frequency, error cases. 
+ Depends on A2 (Adham’s final interface list) and A0. 
+
+
+===== PAGE 5 =====
+
+Part 2 
+ C2 – Storyboards for 1–2 Use Cases (System-heavy) 
+ For use cases that involve external systems/DB: 
+ Show how the user and system interact step-by-step. 
+ Depends on A0, A1, and C1; and should respect A4 navigation. 
+ C3 – Figma Screens for 1–2 UIs 
+ Implement 1–2 screens in Figma related to those system-heavy use 
+cases. 
+ Depends on A1, A4, and A5. 
+Part 3 
+ C4 – Simple External Electronic Output Report 
+ Design 1 simpler external report (for clients/partners, etc.). 
+ Depends on A2 and A0; integrated later into A11. 
+ 
+Yassin 
+Part 1 
+ D1 – Validation of 5 Use Cases & Interfaces 
+ Cross-check Adham’s selection (A0) with previous diagrams. 
+ Check that every chosen use case has: 
+ At least one UI. 
+ Relevant system interfaces if needed. 
+ Depends on A0, A1, and A2. 
+Part 2 
+ D2 – Menu Design Diagram (Hierarchy & Flow) 
+ Draw the final menu hierarchy and navigation flow (e.g., main window 
+→ submenus → dialogs). 
+ Make it easy to map to future Java JFrame/JPanel structure. 
+ Depends on A4 and B2 (table). 
+
+
+===== PAGE 6 =====
+
+ D3 – Storyboard + Figma for 1 UI 
+ Choose 1 remaining use case: 
+ Create 1 storyboard. 
+ Create 1 matching Figma screen. 
+ Depends on A0, A1, A4, and A5. 
+Part 3 
+ D4 – Jira Timeline Setup 
+ Create the full Jira plan for all the above tasks (A*, B*, C*, D*). 
+ Assign issues and set dependencies in Jira. 
+ Should be done early, but refined as tasks become clearer. 
+ D5 – GitHub Organization & Final Commit 
+ Ensure: 
+ All diagrams, Figma exports, and the final PDF are pushed. 
+ Java GUI project (if started) has a clean structure. 
+ Depends on almost everything: especially A3, A8, A11. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Adham (Lead) 
+ Define and justify the five core use cases (UC01, UC02, UC03, UC06, UC07) 
+and document assumptions and traceability to Deliverable 3 artifacts. 
+ Finalize the complete UI list (UI01–UI12) and the UI-to-use-case mapping table 
+with consistent naming across report and Figma. 
+
+
+===== PAGE 7 =====
+
+ Design and finalize the full menu hierarchy and navigation flow so it matches the 
+use cases, storyboards, and screens. 
+ Write and finalize the UI/UX guidelines section (colors, validation, error handling, 
+feedback) and ensure they are applied consistently in the screens. 
+ Integrate all sections into one clean technical report PDF and fix formatting 
+issues (captions, headings, page numbers, duplicates) and remove any non-
+required sections. 
+Ahmed 
+ Create and refine the doctor schedule screens and required state variants in 
+Figma (UI04, UI09, UI09b) based on the storyboard flow. 
+ Perform a consistency cleanup in Figma so all frames match UI01–UI12 naming 
+and shared components/styles are reused. 
+ Verify the UC-03 storyboard steps are visually represented in the corresponding 
+screens and export clean screenshots for the report. 
+Andrew 
+ Produce the menu grouping table mapping the five use cases to menu 
+categories, roles, frequency, and rationale. 
+ Rewrite the UI descriptions section as one-to-two lines per UI (UI01–UI12) 
+without implementation details. 
+ Review the document structure for clarity and consistency (titles, labels, ordering) 
+and flag any missing or duplicated content. 
+Yassin 
+ Create the storyboards for UC01, UC02, UC03, UC06, and UC07 with clear step-
+by-step user actions and system responses aligned to the diagrams. 
+ Create the menu hierarchy and navigation flow diagram (D2) showing login-to-
+dashboard and dashboard-to-screen transitions. 
+ Cross-check that every storyboard step has a matching UI screen and that every 
+UI screen is reachable through the menu/navigation. 
+ 
+ 
+ 
+
+
+===== PAGE 8 =====
+
+ 
