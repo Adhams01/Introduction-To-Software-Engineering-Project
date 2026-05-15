@@ -1,0 +1,79 @@
+@startuml IT1_AppointmentIterator
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+title Iterator Pattern — IT1: Appointment Collection Traversal\nAuthor: [ANDREW]
+
+package "hospitalmangementsystem.patterns.behavioral.iterator.appointment" {
+
+    interface AppointmentIterator <<Iterator>> {
+        + hasNext() : boolean
+        + next() : Appointment
+    }
+
+    interface AppointmentAggregate <<Aggregate>> {
+        + createIterator() : AppointmentIterator
+        + createIteratorByStatus(status : String) : AppointmentIterator
+    }
+
+    class AppointmentCollection <<ConcreteAggregate>> {
+        - appointments : Appointment[]
+        - size : int
+        + AppointmentCollection()
+        + addAppointment(appointment : Appointment) : void
+        + size() : int
+        + createIterator() : AppointmentIterator
+        + createIteratorByStatus(status : String) : AppointmentIterator
+    }
+
+    class AllAppointmentsIterator <<ConcreteIterator>> {
+        - collection : AppointmentCollection
+        - cursor : int
+        + AllAppointmentsIterator(collection : AppointmentCollection)
+        + hasNext() : boolean
+        + next() : Appointment
+    }
+
+    class StatusAppointmentIterator <<ConcreteIterator>> {
+        - collection : AppointmentCollection
+        - targetStatus : String
+        - cursor : int
+        + StatusAppointmentIterator(collection : AppointmentCollection, targetStatus : String)
+        + hasNext() : boolean
+        + next() : Appointment
+    }
+}
+
+package "Client" {
+    class AppointmentIteratorDemo {
+        + main(args : String[]) : void
+    }
+}
+
+' Relationships
+AppointmentCollection ..|> AppointmentAggregate : implements
+AllAppointmentsIterator ..|> AppointmentIterator : implements
+StatusAppointmentIterator ..|> AppointmentIterator : implements
+
+AppointmentCollection ..> AllAppointmentsIterator : "creates"
+AppointmentCollection ..> StatusAppointmentIterator : "creates"
+
+AllAppointmentsIterator --> AppointmentCollection : "iterates"
+StatusAppointmentIterator --> AppointmentCollection : "iterates (filtered)"
+
+AppointmentIteratorDemo --> AppointmentAggregate : "uses"
+AppointmentIteratorDemo --> AppointmentIterator : "uses"
+
+note right of AppointmentCollection
+  **Iterator Pattern (GoF)**
+  Internal Appointment[] array never
+  exposed to client code.
+  Clients call createIterator() or
+  createIteratorByStatus() and traverse
+  using hasNext() / next() only.
+  New traversal = new Iterator class,
+  zero changes to AppointmentCollection.
+end note
+
+@enduml

@@ -1,0 +1,198 @@
+HOSPITAL MANAGEMENT SYSTEM — DELIVERABLE 5
+Y0: COMPOSITE SERVICE — DETAILED SCENARIO WORKFLOW
+SW311 Software Design & Development — Spring 2026
+Owner: Yassin
+
+================================================================
+1. OVERVIEW
+================================================================
+
+Service Name     : Book Appointment Composite Service
+Endpoint         : POST /api/composite/book-appointment
+Base path        : /api/composite
+Purpose          : Orchestrate Patient lookup, Doctor lookup, and
+                   Appointment persistence in one client call.
+Pattern          : Orchestration (central coordinator: CompositeController)
+Implementation : Synchronous in-process calls to repositories in the
+                   monolith (same logical steps as multi-service GET/POST).
+
+================================================================
+2. DETAILED API CALL SEQUENCE
+================================================================
+
+STEP 1: RECEIVE CLIENT REQUEST
+------------------------------
+Method: POST
+URL:    http://localhost:8080/api/composite/book-appointment
+Headers:
+  Content-Type: application/json
+
+Request Body (BookingRequest):
+{
+  "patientId": 1,
+  "doctorId": 1,
+  "date": "2026-05-20",
+  "timeSlot": "10:00",
+  "reason": "Routine checkup"
+}
+
+Validation: patientId and doctorId are required (@NotNull). date and
+timeSlot are required (@NotBlank). reason is optional.
+On validation failure: 400 Bad Request before any orchestration step.
+
+------------------------------------------------------------------
+
+STEP 2: VALIDATE PATIENT EXISTS (logical "internal call")
+---------------------------------------------------------
+Equivalent standalone API: GET /api/patients/{patientId}
+
+Internal action:
+  patientRepository.findById(patientId)
+
+Expected success:
+  Patient entity found; id and name used later in response.
+
+Expected failure (404 Not Found):
+  ResourceNotFoundException with message like:
+  "Patient not found: 999"
+
+Sample error body (404):
+{
+  "timestamp": "2026-05-12T15:30:00.123",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Patient not found: 999"
+}
+
+Policy: FAIL-FAST — do not proceed to doctor or appointment steps.
+
+------------------------------------------------------------------
+
+STEP 3: VALIDATE DOCTOR EXISTS (logical "internal call")
+--------------------------------------------------------
+Equivalent standalone API: GET /api/doctors/{doctorId}
+
+Internal action:
+  doctorRepository.findById(doctorId)
+
+Expected success:
+  Doctor entity found; id, name, specialty used in response.
+
+Expected failure (404 Not Found):
+  "Doctor not found: 999"
+
+Sample error body (404):
+{
+  "timestamp": "2026-05-12T15:30:05.456",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Doctor not found: 999"
+}
+
+Policy: FAIL-FAST — appointment row is NOT created.
+
+------------------------------------------------------------------
+
+STEP 4: CREATE APPOINTMENT RECORD (logical "internal call")
+---------------------------------------------------------
+Equivalent standalone API: POST /api/appointments
+
+Internal action:
+  Build Appointment with patientId, doctorId, date, timeSlot, reason,
+  status = "CONFIRMED", persist via appointmentRepository.save(...).
+
+Expected success (201 Created at composite boundary):
+  Saved Appointment includes generated id.
+
+Expected failure:
+  If persistence or unexpected error occurs, GlobalExceptionHandler may
+  return 500 with "Unexpected error: ..." (generic handler).
+
+Note: In the composite path, patient and doctor were already validated,
+      so typical failure here is infrastructure-level, not 404.
+
+------------------------------------------------------------------
+
+STEP 5: RETURN COMPOSITE RESPONSE
+---------------------------------
+HTTP status: 201 Created
+
+Response body (BookingResponse — flat DTO matching implementation):
+{
+  "appointmentId": 7,
+  "patientId": 1,
+  "patientName": "Ahmed Hassan",
+  "doctorId": 1,
+  "doctorName": "Dr. Fatima Nour",
+  "doctorSpecialty": "General Medicine",
+  "date": "2026-05-20",
+  "timeSlot": "10:00",
+  "reason": "Routine checkup",
+  "status": "CONFIRMED"
+}
+
+================================================================
+3. ERROR HANDLING SCENARIOS
+================================================================
+
+SCENARIO A: Patient Not Found
+-----------------------------
+Trigger: patientId does not exist in patientRepository
+HTTP:    404 Not Found
+Action:  Immediate return; no doctor read; no appointment insert
+Body:    timestamp, status, error, message (see Step 2)
+
+SCENARIO B: Doctor Not Found
+------------------------------
+Trigger: doctorId does not exist in doctorRepository
+HTTP:    404 Not Found
+Action:  Patient existed but flow stops; no appointment insert
+Body:    timestamp, status, error, message (see Step 3)
+
+SCENARIO C: Invalid Request Body (validation)
+---------------------------------------------
+Trigger: Missing patientId/doctorId/date/timeSlot or blank strings
+HTTP:    400 Bad Request
+Body:    Includes "details" map with field → validation message
+Example fragment:
+{
+  "timestamp": "2026-05-12T15:00:00",
+  "status": 400,
+  "error": "Validation Failed",
+  "details": {
+    "patientId": "patientId required"
+  }
+}
+
+SCENARIO D: Appointment Persistence Fails
+-----------------------------------------
+Trigger: Uncaught exception during save
+HTTP:    500 Internal Server Error (catch-all handler)
+Policy:  No distributed transaction; client retries explicitly if needed.
+
+================================================================
+4. EXACT CALL ORDER SUMMARY
+================================================================
+
+Order  Step                          Service / layer
+-----  ---------------------------   --------------------------------
+  1    Validate JSON + constraints   CompositeController (BookingRequest)
+  2    Load patient by id            Patient domain (repository)
+  3    Load doctor by id             Doctor domain (repository)
+  4    Insert appointment            Appointment domain (repository)
+  5    Map entities to BookingResponse Return to client
+
+Logical REST mapping (if services were split):
+  1  GET  /api/patients/{patientId}
+  2  GET  /api/doctors/{doctorId}
+  3  POST /api/appointments  (with same field values + status)
+
+================================================================
+5. IMPLEMENTATION NOTES
+================================================================
+
+- All steps are synchronous; no message broker in this deliverable.
+- No retry or compensation logic; fail-fast on first hard error.
+- Composite uses direct repositories for performance in the monolith;
+  the scenario above stays aligned with A4 design intent and Postman
+  testing against the deployed Spring Boot application.

@@ -1,0 +1,119 @@
+@startuml M3_FactoryMethod_AppointmentFactory
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "hospitalmangementsystem.domain" {
+    class Appointment {
+        - appointmentId : String
+        - patientId : String
+        - startTime : String
+        - status : String
+        + Appointment(appointmentId : String, patientId : String, startTime : String, status : String)
+        + getAppointmentId() : String
+        + getPatientId() : String
+        + getStartTime() : String
+        + getStatus() : String
+        + setStatus(status : String) : void
+        + getType() : String
+        + getDurationMinutes() : int
+    }
+}
+
+package "hospitalmangementsystem.patterns.factory" {
+    
+    abstract class AppointmentFactory {
+        + {abstract} createAppointment(appointmentId : String, patientId : String, startTime : String) : Appointment
+        + bookAppointment(appointmentId : String, patientId : String, startTime : String) : Appointment
+    }
+    
+    class CheckupAppointmentFactory {
+        + createAppointment(appointmentId : String, patientId : String, startTime : String) : Appointment
+    }
+    
+    class SurgeryAppointmentFactory {
+        + createAppointment(appointmentId : String, patientId : String, startTime : String) : Appointment
+    }
+    
+    class FollowUpAppointmentFactory {
+        + createAppointment(appointmentId : String, patientId : String, startTime : String) : Appointment
+    }
+    
+    class EmergencyAppointmentFactory {
+        + createAppointment(appointmentId : String, patientId : String, startTime : String) : Appointment
+    }
+    
+    class CheckupAppointment {
+        + getType() : String
+        + getDurationMinutes() : int
+    }
+    
+    class SurgeryAppointment {
+        + getType() : String
+        + getDurationMinutes() : int
+    }
+    
+    class FollowUpAppointment {
+        + getType() : String
+        + getDurationMinutes() : int
+    }
+    
+    class EmergencyAppointment {
+        + getType() : String
+        + getDurationMinutes() : int
+        + getStatus() : String
+    }
+}
+
+package "hospitalmangementsystem.controller" {
+    class AppointmentController {
+        - appointmentDAO : AppointmentDAO
+        - notificationService : NotificationService
+        - factory : AppointmentFactory
+        + AppointmentController(appointmentDAO : AppointmentDAO, notificationService : NotificationService, factory : AppointmentFactory)
+        + scheduleAppointment(appointmentId : String, patientId : String, startTime : String) : Appointment
+        + cancelAppointment(appointmentId : String) : String
+    }
+}
+
+' Relationships
+Appointment <|-- CheckupAppointment : extends
+Appointment <|-- SurgeryAppointment : extends
+Appointment <|-- FollowUpAppointment : extends
+Appointment <|-- EmergencyAppointment : extends
+
+AppointmentFactory <|-- CheckupAppointmentFactory : extends
+AppointmentFactory <|-- SurgeryAppointmentFactory : extends
+AppointmentFactory <|-- FollowUpAppointmentFactory : extends
+AppointmentFactory <|-- EmergencyAppointmentFactory : extends
+
+CheckupAppointmentFactory ..> CheckupAppointment : "<<creates>>"
+SurgeryAppointmentFactory ..> SurgeryAppointment : "<<creates>>"
+FollowUpAppointmentFactory ..> FollowUpAppointment : "<<creates>>"
+EmergencyAppointmentFactory ..> EmergencyAppointment : "<<creates>>"
+
+AppointmentFactory ..> Appointment : "returns"
+
+AppointmentController --> AppointmentFactory : "uses"
+AppointmentController --> Appointment : "creates via factory"
+
+note right of AppointmentFactory
+  **Factory Method Pattern**
+  - Abstract creator defines factory method
+  - Concrete creators override to return specific products
+  - Template method (bookAppointment) uses factory method
+end note
+
+note right of CheckupAppointmentFactory
+  **Checkup Factory**
+  Creates 30-minute standard
+  consultation appointments.
+end note
+
+note right of SurgeryAppointmentFactory
+  **Surgery Factory**
+  Creates 2-hour procedure
+  appointments.
+end note
+
+@enduml

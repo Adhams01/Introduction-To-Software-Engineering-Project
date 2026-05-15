@@ -1,0 +1,219 @@
+HOSPITAL MANAGEMENT SYSTEM — DELIVERABLE 5
+M0: APPOINTMENT SERVICE — FULL LIFECYCLE DESIGN
+SW311 Software Design & Development — Spring 2026
+Owner: Maged
+
+================================================================
+1. SERVICE CANDIDATE IDENTIFICATION
+================================================================
+
+Service Name     : Appointment Service
+Classification : Coordination Service
+Base URL         : /api/appointments
+
+Justification for Selection as a Service Candidate:
+
+  a) HIGH REUSABILITY
+     Appointment records link patients and doctors in time. Many
+     workflows (front desk, doctor portal, composite booking) need
+     the same scheduling API without reimplementing persistence.
+
+  b) FUNCTIONAL INDEPENDENCE
+     The service exposes its own REST contract and persistence for
+     appointments. It does not embed Patient or Doctor business rules;
+     it stores foreign keys (patientId, doctorId) and scheduling fields.
+
+  c) CLEAR BUSINESS BOUNDARY
+     The boundary is the appointment aggregate: who, when, why, and
+     lifecycle status. Patient and Doctor services remain authoritative
+     for their respective entities.
+
+  d) REUSE POTENTIAL
+     Classified as a Coordination Service because it coordinates
+     scheduling information across organizational actors (patient +
+     doctor + slot) even when underlying entities live in sibling
+     services. The Book Appointment composite further orchestrates
+     validation before creation.
+
+================================================================
+2. SERVICE REQUIREMENTS
+================================================================
+
+--- FUNCTIONAL REQUIREMENTS (FR) ---
+
+FR-A-01: The system shall allow retrieving all appointments.
+         Endpoint: GET /api/appointments
+         Response: 200 OK + JSON array of appointment objects
+
+FR-A-02: The system shall allow retrieving a single appointment by ID.
+         Endpoint: GET /api/appointments/{id}
+         Response: 200 OK + JSON appointment object | 404 if not found
+
+FR-A-03: The system shall allow creating a new appointment with patientId,
+         doctorId, date, timeSlot, and optional reason.
+         Endpoint: POST /api/appointments
+         Response: 201 Created + created appointment (status set by server)
+
+FR-A-04: The system shall allow updating appointment details (reschedule,
+         change reason, reassign ids as provided in body).
+         Endpoint: PUT /api/appointments/{id}
+         Response: 200 OK + updated appointment | 404 if not found
+
+FR-A-05: The system shall allow deleting (cancelling/removing) an
+         appointment by ID.
+         Endpoint: DELETE /api/appointments/{id}
+         Response: 204 No Content | 404 if not found
+
+--- NON-FUNCTIONAL REQUIREMENTS (NFR) ---
+
+NFR-A-01 (Performance):
+  List and single-GET endpoints should remain responsive under normal
+  demo loads (Postman / classroom usage).
+
+NFR-A-02 (Data Integrity):
+  Required fields (patientId, doctorId, date, timeSlot) must be enforced
+  at the API layer; invalid payloads return 400 with field-level details.
+
+NFR-A-03 (Reliability):
+  Predictable HTTP semantics: 200/201/204 for success; 404 for unknown
+  ids; 400 for validation failures.
+
+NFR-A-04 (Maintainability):
+  AppointmentController → AppointmentService → AppointmentRepository
+  layering; mapping to DTOs keeps the REST contract stable.
+
+NFR-A-05 (Usability):
+  Errors follow the global JSON error pattern used across HMS services.
+
+================================================================
+3. INTERFACE DESIGN — REST API
+================================================================
+
+--- Endpoint 1: GET /api/appointments ---
+
+  Description : Retrieve all appointments
+  Method      : GET
+  URL         : /api/appointments
+  Auth        : None (for this deliverable)
+  Request Body: None
+
+  Success Response (200 OK):
+  [
+    {
+      "id": 1,
+      "patientId": 1,
+      "doctorId": 1,
+      "date": "2026-05-20",
+      "timeSlot": "10:00",
+      "reason": "Routine checkup",
+      "status": "CONFIRMED"
+    }
+  ]
+
+  Error Responses:
+    500 Internal Server Error — unexpected server failure
+
+--- Endpoint 2: GET /api/appointments/{id} ---
+
+  Description  : Retrieve a single appointment by ID
+  Method       : GET
+  URL          : /api/appointments/{id}
+  Path Param   : id (Long)
+  Request Body : None
+
+  Success Response (200 OK):
+  {
+    "id": 1,
+    "patientId": 1,
+    "doctorId": 1,
+    "date": "2026-05-20",
+    "timeSlot": "10:00",
+    "reason": "Routine checkup",
+    "status": "CONFIRMED"
+  }
+
+  Error Responses:
+    404 Not Found:
+    {
+      "timestamp": "2026-05-12T14:00:00",
+      "status": 404,
+      "error": "Not Found",
+      "message": "Appointment not found with id: 99"
+    }
+
+--- Endpoint 3: POST /api/appointments ---
+
+  Description  : Create a new appointment
+  Method       : POST
+  URL          : /api/appointments
+  Request Body :
+  {
+    "patientId": 1,
+    "doctorId": 1,
+    "date": "2026-05-21",
+    "timeSlot": "14:00",
+    "reason": "Follow-up"
+  }
+
+  Success Response (201 Created):
+  {
+    "id": 2,
+    "patientId": 1,
+    "doctorId": 1,
+    "date": "2026-05-21",
+    "timeSlot": "14:00",
+    "reason": "Follow-up",
+    "status": "CONFIRMED"
+  }
+
+  Note: status is assigned by the server on create in the current
+  implementation (typically CONFIRMED).
+
+  Error Responses:
+    400 Bad Request — validation failure
+
+--- Endpoint 4: PUT /api/appointments/{id} ---
+
+  Description  : Update an existing appointment
+  Method       : PUT
+  URL          : /api/appointments/{id}
+  Path Param   : id (Long)
+  Request Body : Same fields as POST (AppointmentRequest)
+  Success      : 200 OK + updated appointment object
+  Errors       : 400, 404
+
+--- Endpoint 5: DELETE /api/appointments/{id} ---
+
+  Description  : Delete an appointment record
+  Method       : DELETE
+  URL          : /api/appointments/{id}
+  Path Param   : id (Long)
+  Request Body : None
+  Success      : 204 No Content
+  Errors       : 404 Not Found
+
+================================================================
+4. APPOINTMENT DATA MODEL
+================================================================
+
+Field       Type      Constraints           Description
+---------   ------    -------------------   -------------------------
+id          Long      Auto-generated, PK    Unique appointment identifier
+patientId   Long      Required              Reference to Patient record
+doctorId    Long      Required              Reference to Doctor record
+date        String    Required, YYYY-MM-DD  Appointment date
+timeSlot    String    Required, HH:mm       Time slot
+reason      String    Optional              Reason / notes (max length in DB)
+status      String    Server-managed        e.g. PENDING / CONFIRMED / CANCELLED
+
+================================================================
+5. CONSTRAINTS
+================================================================
+
+C-A-01: Appointment IDs are system-generated.
+C-A-02: This deliverable stores patientId and doctorId without enforcing
+        database foreign keys to sibling services; callers should use
+        valid ids (composite flow validates before insert).
+C-A-03: Uniqueness of (patientId, doctorId, date, timeSlot) is not
+        enforced in the MVP codebase; production systems would add this rule.
+C-A-04: The service uses H2 in-memory DB; data resets on app restart.

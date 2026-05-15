@@ -1,0 +1,149 @@
+HOSPITAL MANAGEMENT SYSTEM — DELIVERABLE 5
+A4: COMPOSITE SERVICE DESIGN — "BOOK APPOINTMENT"
+SW311 Software Design & Development — Spring 2026
+Owner: Adham (Design) | Andrew (Implementation)
+
+================================================================
+1. COMPOSITE SERVICE OVERVIEW
+================================================================
+
+Service Name : Book Appointment Composite Service
+Endpoint     : POST /api/composite/book-appointment
+Type         : Orchestration-based Composite Service
+Purpose      : Executes a full appointment booking workflow by
+               orchestrating calls to three individual services:
+               Patient Service → Doctor Service → Appointment Service
+
+================================================================
+2. SEQUENCE DIAGRAM (Text Representation)
+================================================================
+
+Client           CompositeService       PatientService    DoctorService    AppointmentService
+  |                     |                     |                 |                  |
+  |--POST /book-appt--> |                     |                 |                  |
+  |  {patientId,        |                     |                 |                  |
+  |   doctorId,         |                     |                 |                  |
+  |   date, time,       |                     |                 |                  |
+  |   reason}           |                     |                 |                  |
+  |                     |--GET /patients/{id}->|                 |                  |
+  |                     |<--200 OK + patient--|                 |                  |
+  |                     |  [or 404 → STOP]    |                 |                  |
+  |                     |                     |                 |                  |
+  |                     |-----GET /doctors/{id}--------------->|                  |
+  |                     |<----200 OK + doctor------------------|                  |
+  |                     |  [or 404 → STOP]                      |                  |
+  |                     |                     |                 |                  |
+  |                     |----------POST /appointments------------------------>|   |
+  |                     |           {patientId, doctorId, date, time, reason}|   |
+  |                     |<---------201 Created + appointment object-----------|   |
+  |                     |  [or 400/500 → propagate error]                        |
+  |                     |                     |                 |                  |
+  |<--201 Created-------|                     |                 |                  |
+  |  {appointmentId,    |                     |                 |                  |
+  |   patient, doctor,  |                     |                 |                  |
+  |   date, time,       |                     |                 |                  |
+  |   status}           |                     |                 |                  |
+
+================================================================
+3. WORKFLOW DESCRIPTION
+================================================================
+
+The "Book Appointment" composite service follows an ORCHESTRATION
+pattern — a central coordinator (CompositeController) controls
+the sequence of calls. No service calls another service directly.
+
+Step 1 — Receive Request
+  The client sends a POST request to /api/composite/book-appointment
+  with the following payload:
+    {
+      "patientId" : 1,
+      "doctorId"  : 2,
+      "date"      : "2026-06-01",
+      "timeSlot"  : "10:00",
+      "reason"    : "Routine checkup"
+    }
+
+Step 2 — Validate Patient Exists
+  API Called : GET /api/patients/{patientId}
+  Purpose    : Confirm the patient is registered in the system.
+  On Success : Patient object stored in memory for response assembly.
+  On Failure : Return 404 immediately. "Patient not found. Cannot book."
+
+Step 3 — Validate Doctor Exists
+  API Called : GET /api/doctors/{doctorId}
+  Purpose    : Confirm the doctor is registered and available.
+  On Success : Doctor object stored in memory for response assembly.
+  On Failure : Return 404 immediately. "Doctor not found. Cannot book."
+
+Step 4 — Create Appointment
+  API Called : POST /api/appointments
+  Payload    : { patientId, doctorId, date, timeSlot, reason }
+  Purpose    : Persist the appointment record in the system.
+  On Success : Appointment created; appointmentId returned.
+  On Failure : Propagate 400/500 error to client.
+
+Step 5 — Return Composite Response
+  The composite service assembles a unified response from
+  Steps 2, 3, and 4 and returns HTTP 201 Created:
+    {
+      "appointmentId" : 7,
+      "patient" : {
+        "id"   : 1,
+        "name" : "Ahmed Hassan"
+      },
+      "doctor" : {
+        "id"       : 2,
+        "name"     : "Dr. Fatima Nour",
+        "specialty": "General Medicine"
+      },
+      "date"     : "2026-06-01",
+      "timeSlot" : "10:00",
+      "reason"   : "Routine checkup",
+      "status"   : "CONFIRMED"
+    }
+
+================================================================
+4. API CALL ORDER SUMMARY
+================================================================
+
+  Order   Service             HTTP Method   Endpoint
+  -----   -------             -----------   -----------------------
+  1       Patient Service     GET           /api/patients/{patientId}
+  2       Doctor Service      GET           /api/doctors/{doctorId}
+  3       Appointment Service POST          /api/appointments
+
+================================================================
+5. DESIGN DECISIONS
+================================================================
+
+a) ORCHESTRATION vs CHOREOGRAPHY
+   We chose Orchestration (central coordinator) over Choreography
+   (event-driven) because:
+   - The workflow is sequential (each step depends on the previous)
+   - Error handling is simpler to control centrally
+   - Easier to test and trace in Postman
+
+b) FAIL-FAST STRATEGY
+   If Step 2 or Step 3 fails, the service stops immediately and
+   returns the error. We do NOT create an appointment if the
+   patient or doctor cannot be verified.
+
+c) NO DISTRIBUTED TRANSACTIONS
+   For this deliverable, no rollback mechanism is implemented.
+   If Step 4 fails after Steps 2 and 3 succeed, the appointment
+   is simply not created (no data inconsistency since Steps 2/3
+   are read-only GET calls).
+
+================================================================
+6. DEPENDENCY MAP
+================================================================
+
+  This composite service depends on:
+    - A2 (Patient Service design)  — Adham ✓
+    - B2 (Doctor Service design)   — Andrew ✓
+    - M0 (Appointment Service design) — Maged ✓
+    - A3 (GET /patients endpoint)  — Adham ✓
+    - B3 (GET + POST /doctors endpoint) — Andrew
+    - B3 (POST /appointments endpoint)  — Andrew
+
+  Andrew (B4) implements this design as working code.

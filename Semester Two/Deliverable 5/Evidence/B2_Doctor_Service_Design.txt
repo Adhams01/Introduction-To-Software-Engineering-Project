@@ -1,0 +1,211 @@
+HOSPITAL MANAGEMENT SYSTEM — DELIVERABLE 5
+B2: DOCTOR SERVICE — FULL LIFECYCLE DESIGN
+SW311 Software Design & Development — Spring 2026
+Owner: Andrew
+
+================================================================
+1. SERVICE CANDIDATE IDENTIFICATION
+================================================================
+
+Service Name   : Doctor Service
+Classification : Business Service
+Base URL       : /api/doctors
+
+Justification for Selection as a Service Candidate:
+
+  a) HIGH REUSABILITY
+     Doctor profiles are consumed by scheduling, the Appointment
+     Service, reporting, and the Book Appointment composite flow.
+     A dedicated Doctor Service avoids scattering doctor data across
+     modules and supports future consumers (e.g. department portals).
+
+  b) FUNCTIONAL INDEPENDENCE
+     CRUD operations on doctors do not require appointment logic.
+     The service can be developed, tested, and reasoned about on
+     its own, with clear REST boundaries.
+
+  c) CLEAR BUSINESS BOUNDARY
+     The capability is singular: maintain authoritative doctor
+     records (identity, contact, specialty, availability). This is
+     a cohesive domain slice of the hospital system.
+
+  d) REUSE POTENTIAL
+     Any subsystem that needs doctor lookup (composite booking,
+     rostering, billing) can call the same API without duplicating
+     persistence or validation rules.
+
+================================================================
+2. SERVICE REQUIREMENTS
+================================================================
+
+--- FUNCTIONAL REQUIREMENTS (FR) ---
+
+FR-D-01: The system shall allow retrieving a list of all registered doctors.
+         Endpoint: GET /api/doctors
+         Response: 200 OK + JSON array of doctor objects
+
+FR-D-02: The system shall allow retrieving a single doctor by unique ID.
+         Endpoint: GET /api/doctors/{id}
+         Response: 200 OK + JSON doctor object | 404 if not found
+
+FR-D-03: The system shall allow registering a new doctor with name, email,
+         phone, specialty, and optional availability flag.
+         Endpoint: POST /api/doctors
+         Response: 201 Created + created doctor object
+
+FR-D-04: The system shall allow updating an existing doctor's information.
+         Endpoint: PUT /api/doctors/{id}
+         Response: 200 OK + updated doctor object | 404, 409 as applicable
+
+FR-D-05: The system shall allow deleting a doctor record by ID.
+         Endpoint: DELETE /api/doctors/{id}
+         Response: 204 No Content | 404 if not found
+
+--- NON-FUNCTIONAL REQUIREMENTS (NFR) ---
+
+NFR-D-01 (Performance):
+  GET /api/doctors should respond within 500ms for typical roster sizes
+  (hundreds of rows) on the reference hardware for this course.
+
+NFR-D-02 (Data Integrity):
+  Email addresses must be unique across all doctor records.
+  Duplicate email on create or update must return HTTP 409 Conflict.
+
+NFR-D-03 (Reliability):
+  The service must return consistent HTTP status codes for success and
+  failure paths (200/201/204/400/404/409) aligned with REST usage.
+
+NFR-D-04 (Maintainability):
+  The Doctor Service follows layered architecture:
+  DoctorController → DoctorService → DoctorRepository → Database.
+  Business rules (e.g. duplicate email checks) live in the service layer.
+
+NFR-D-05 (Usability):
+  Error responses use JSON bodies with timestamp, status, error, and
+  message (or validation details for 400) for client diagnostics.
+
+================================================================
+3. INTERFACE DESIGN — REST API
+================================================================
+
+--- Endpoint 1: GET /api/doctors ---
+
+  Description : Retrieve all registered doctors
+  Method      : GET
+  URL         : /api/doctors
+  Auth        : None (for this deliverable)
+  Request Body: None
+
+  Success Response (200 OK):
+  [
+    {
+      "id": 1,
+      "name": "Dr. Fatima Nour",
+      "email": "fatima.nour@hospital.com",
+      "phone": "+20 122 555 6666",
+      "specialty": "General Medicine",
+      "available": true
+    }
+  ]
+
+  Error Responses:
+    500 Internal Server Error — unexpected server failure
+
+--- Endpoint 2: GET /api/doctors/{id} ---
+
+  Description  : Retrieve a single doctor by ID
+  Method       : GET
+  URL          : /api/doctors/{id}
+  Path Param   : id (Long) — the doctor's database ID
+  Request Body : None
+
+  Success Response (200 OK):
+  {
+    "id": 1,
+    "name": "Dr. Fatima Nour",
+    "email": "fatima.nour@hospital.com",
+    "phone": "+20 122 555 6666",
+    "specialty": "General Medicine",
+    "available": true
+  }
+
+  Error Responses:
+    404 Not Found:
+    {
+      "timestamp": "2026-05-12T14:00:00",
+      "status": 404,
+      "error": "Not Found",
+      "message": "Doctor not found with id: 99"
+    }
+
+--- Endpoint 3: POST /api/doctors ---
+
+  Description  : Register a new doctor
+  Method       : POST
+  URL          : /api/doctors
+  Request Body (required fields per validation):
+  {
+    "name":       "Dr. Nadia Fathy",           ← required, 2–100 chars
+    "email":      "nadia.fathy@hospital.com",← required, valid email, unique
+    "phone":      "+20 122 333 4444",          ← required
+    "specialty":  "Neurology",                 ← required
+    "available":  true                         ← optional; default true
+  }
+
+  Success Response (201 Created):
+  {
+    "id": 3,
+    "name": "Dr. Nadia Fathy",
+    "email": "nadia.fathy@hospital.com",
+    "phone": "+20 122 333 4444",
+    "specialty": "Neurology",
+    "available": true
+  }
+
+  Error Responses:
+    400 Bad Request — validation failure (JSON with "details" map)
+    409 Conflict   — email already exists
+
+--- Endpoint 4: PUT /api/doctors/{id} ---
+
+  Description  : Update an existing doctor
+  Method       : PUT
+  URL          : /api/doctors/{id}
+  Path Param   : id (Long)
+  Request Body : Same structure as POST (DoctorRequest)
+  Success      : 200 OK + updated doctor object
+  Errors       : 400, 404, 409
+
+--- Endpoint 5: DELETE /api/doctors/{id} ---
+
+  Description  : Delete a doctor record
+  Method       : DELETE
+  URL          : /api/doctors/{id}
+  Path Param   : id (Long)
+  Request Body : None
+  Success      : 204 No Content
+  Errors       : 404 Not Found
+
+================================================================
+4. DOCTOR DATA MODEL
+================================================================
+
+Field       Type      Constraints              Description
+---------   ------    ----------------------   -------------------------
+id          Long      Auto-generated, PK       Unique doctor identifier
+name        String    Required, 2–100 chars    Doctor full name
+email       String    Required, unique,        Email address
+                       valid email format
+phone       String    Required                 Contact phone number
+specialty   String    Required                 Medical specialty
+available   Boolean   Optional, default true Whether doctor is available
+
+================================================================
+5. CONSTRAINTS
+================================================================
+
+C-D-01: Doctor IDs are system-generated and cannot be set by the client.
+C-D-02: Email must be unique. Duplicate attempts return HTTP 409.
+C-D-03: Deleting a doctor does NOT cascade-delete appointments in this
+        deliverable; referential consistency is a known integration topic.
+C-D-04: The service uses H2 in-memory DB; data resets on app restart.

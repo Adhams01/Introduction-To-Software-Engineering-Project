@@ -1,0 +1,131 @@
+@startuml AD2_Payment_Gateway_Adapter
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 14
+skinparam classBackgroundColor WhiteSmoke
+skinparam classArrowColor Black
+skinparam classBorderColor Black
+
+' Title and header
+title AD2 — Adapter Pattern: Payment Gateway\nOwner: Yassin | Deliverable #2
+
+' Target interface (what HMS expects)
+interface PaymentService {
+    +processPayment(details: PaymentDetails): PaymentResult
+    +processRefund(transactionId: String, amount: double): RefundResult
+    +validatePaymentDetails(details: PaymentDetails): boolean
+}
+
+' Data classes
+class PaymentDetails {
+    -patientId: String
+    -amount: double
+    -currency: String
+    -paymentMethod: String
+    -cardNumber: String
+    -expiryDate: String
+    -cvv: String
+    -billingAddress: String
+    +getMaskedCardNumber(): String
+}
+
+class PaymentResult {
+    -success: boolean
+    -transactionId: String
+    -message: String
+    -amount: double
+    -timestamp: String
+    -status: String
+}
+
+class RefundResult {
+    -success: boolean
+    -refundId: String
+    -originalTransactionId: String
+    -refundAmount: double
+    -message: String
+    -timestamp: String
+}
+
+' Adaptee (external gateway with different interface)
+class ThirdPartyPaymentGateway {
+    -gatewayName: String
+    -apiKey: String
+    +makePayment(cardToken: String, amount: int, currency: String, merchantId: String): String
+    +refundTransaction(originalTxId: String, refundAmount: int): String
+    +validateCard(cardToken: String): String
+    -maskToken(token: String): String
+}
+
+' Adapter (converts between HMS and external formats)
+class PaymentGatewayAdapter {
+    -externalGateway: ThirdPartyPaymentGateway
+    -merchantId: String
+    +processPayment(details: PaymentDetails): PaymentResult
+    +processRefund(transactionId: String, amount: double): RefundResult
+    +validatePaymentDetails(details: PaymentDetails): boolean
+    -tokenizeCard(cardNumber: String): String
+    -parsePaymentResponse(response: String, originalAmount: double): PaymentResult
+    -parseRefundResponse(response: String, originalTxId: String, amount: double): RefundResult
+}
+
+' Demo
+class PaymentAdapterDemo {
+    +main(args: String[]): void
+}
+
+' Relationships
+PaymentService <|.. PaymentGatewayAdapter
+PaymentGatewayAdapter o-- ThirdPartyPaymentGateway : adapts >
+
+PaymentService ..> PaymentDetails : uses
+PaymentService ..> PaymentResult : returns
+PaymentService ..> RefundResult : returns
+
+PaymentAdapterDemo ..> PaymentService : uses
+PaymentAdapterDemo ..> ThirdPartyPaymentGateway : creates
+PaymentAdapterDemo ..> PaymentGatewayAdapter : creates
+PaymentAdapterDemo ..> PaymentDetails : creates
+
+' Notes
+note right of PaymentService
+    **Target Interface**
+    What the Hospital Management
+    System expects. Clean interface
+    for payment operations.
+end note
+
+note left of ThirdPartyPaymentGateway
+    **Adaptee (External)**
+    Third-party payment gateway
+    with different method names
+    and parameter formats.
+    • makePayment() → cents
+    • String responses
+    • Card tokenization
+end note
+
+note bottom of PaymentGatewayAdapter
+    **Adapter**
+    Converts HMS format to/from
+    external gateway format:
+    • $ → cents conversion
+    • Card → token conversion
+    • Response parsing
+    • Error translation
+end note
+
+note right of PaymentAdapterDemo
+    **Demo Shows:**
+    1. Valid payment processing
+    2. Invalid card rejection
+    3. Refund processing
+    4. Batch payments
+    
+    HMS uses PaymentService
+    interface, unaware of
+    external gateway details.
+end note
+
+@enduml

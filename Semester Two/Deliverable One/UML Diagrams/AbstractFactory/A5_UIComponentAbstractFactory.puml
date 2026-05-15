@@ -1,0 +1,232 @@
+@startuml A5_UIComponentAbstractFactory
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "hospitalmangementsystem.patterns.abstractfactory.ui" {
+
+    ' ===== ABSTRACT FACTORY =====
+    interface UIComponentFactory {
+        + createMenu(title: String): MenuComponent
+        + createInput(label: String, hint: String): InputComponent
+        + createButton(label: String, action: String): ButtonComponent
+        + createDivider(): DividerComponent
+    }
+
+    ' ===== CONCRETE FACTORIES =====
+    class ConsoleUIFactory implements UIComponentFactory {
+        + createMenu(title: String): MenuComponent
+        + createInput(label: String, hint: String): InputComponent
+        + createButton(label: String, action: String): ButtonComponent
+        + createDivider(): DividerComponent
+    }
+
+    class WebUIFactory implements UIComponentFactory {
+        + createMenu(title: String): MenuComponent
+        + createInput(label: String, hint: String): InputComponent
+        + createButton(label: String, action: String): ButtonComponent
+        + createDivider(): DividerComponent
+    }
+
+    class AccessibleUIFactory implements UIComponentFactory {
+        + createMenu(title: String): MenuComponent
+        + createInput(label: String, hint: String): InputComponent
+        + createButton(label: String, action: String): ButtonComponent
+        + createDivider(): DividerComponent
+    }
+
+    ' ===== ABSTRACT PRODUCTS =====
+    interface MenuComponent {
+        + addOption(key: String, description: String): void
+        + render(): String
+        + captureSelection(): String
+    }
+
+    interface InputComponent {
+        + setPrompt(label: String): void
+        + setHint(hint: String): void
+        + render(): String
+        + captureInput(scanner: Scanner): String
+    }
+
+    interface ButtonComponent {
+        + setLabel(label: String): void
+        + setAction(action: String): void
+        + render(): String
+        + trigger(): void
+    }
+
+    interface DividerComponent {
+        + render(): String
+    }
+
+    ' ===== CONSOLE PRODUCT FAMILY =====
+    class ConsoleMenu implements MenuComponent {
+        - title: String
+        - options: Map<String, String>
+        + addOption(key: String, description: String): void
+        + render(): String
+        + captureSelection(): String
+    }
+
+    class ConsoleInput implements InputComponent {
+        - label: String
+        - hint: String
+        + setPrompt(label: String): void
+        + setHint(hint: String): void
+        + render(): String
+        + captureInput(scanner: Scanner): String
+    }
+
+    class ConsoleButton implements ButtonComponent {
+        - label: String
+        - action: String
+        + setLabel(label: String): void
+        + setAction(action: String): void
+        + render(): String
+        + trigger(): void
+    }
+
+    class ConsoleDivider implements DividerComponent {
+        + render(): String
+    }
+
+    ' ===== WEB PRODUCT FAMILY =====
+    class WebMenu implements MenuComponent {
+        - title: String
+        - options: List<String>
+        + addOption(key: String, description: String): void
+        + render(): String
+        + captureSelection(): String
+    }
+
+    class WebInput implements InputComponent {
+        - label: String
+        - hint: String
+        + setPrompt(label: String): void
+        + setHint(hint: String): void
+        + render(): String
+        + captureInput(scanner: Scanner): String
+    }
+
+    class WebButton implements ButtonComponent {
+        - label: String
+        - action: String
+        + setLabel(label: String): void
+        + setAction(action: String): void
+        + render(): String
+        + trigger(): void
+    }
+
+    class WebDivider implements DividerComponent {
+        + render(): String
+    }
+
+    ' ===== ACCESSIBLE PRODUCT FAMILY =====
+    class AccessibleMenu implements MenuComponent {
+        - title: String
+        - options: List<String>
+        - ariaLabels: List<String>
+        + addOption(key: String, description: String): void
+        + render(): String
+        + captureSelection(): String
+    }
+
+    class AccessibleInput implements InputComponent {
+        - label: String
+        - hint: String
+        - description: String
+        + setPrompt(label: String): void
+        + setHint(hint: String): void
+        + render(): String
+        + captureInput(scanner: Scanner): String
+    }
+
+    class AccessibleButton implements ButtonComponent {
+        - label: String
+        - action: String
+        - fullDescription: String
+        + setLabel(label: String): void
+        + setAction(action: String): void
+        + render(): String
+        + trigger(): void
+    }
+
+    class AccessibleDivider implements DividerComponent {
+        + render(): String
+    }
+}
+
+package "hospitalmangementsystem.ui" {
+    class PatientUI {
+        - uiFactory: UIComponentFactory
+        - scanner: Scanner
+        + PatientUI(controller: PatientController, factory: UIComponentFactory)
+        + run(scanner: Scanner): void
+        - showRegistrationForm(): void
+    }
+
+    class AppointmentUI {
+        - uiFactory: UIComponentFactory
+        - scanner: Scanner
+        + AppointmentUI(controller: AppointmentController, factory: UIComponentFactory)
+        + run(scanner: Scanner): void
+        - showCancellationMenu(): void
+    }
+}
+
+' ===== RELATIONSHIPS =====
+
+' Factories create their product families
+ConsoleUIFactory ..> ConsoleMenu : "<<creates>>"
+ConsoleUIFactory ..> ConsoleInput : "<<creates>>"
+ConsoleUIFactory ..> ConsoleButton : "<<creates>>"
+ConsoleUIFactory ..> ConsoleDivider : "<<creates>>"
+
+WebUIFactory ..> WebMenu : "<<creates>>"
+WebUIFactory ..> WebInput : "<<creates>>"
+WebUIFactory ..> WebButton : "<<creates>>"
+WebUIFactory ..> WebDivider : "<<creates>>"
+
+AccessibleUIFactory ..> AccessibleMenu : "<<creates>>"
+AccessibleUIFactory ..> AccessibleInput : "<<creates>>"
+AccessibleUIFactory ..> AccessibleButton : "<<creates>>"
+AccessibleUIFactory ..> AccessibleDivider : "<<creates>>"
+
+' UI classes use abstract factory
+PatientUI --> UIComponentFactory : "uses"
+PatientUI --> MenuComponent : "uses"
+PatientUI --> InputComponent : "uses"
+
+AppointmentUI --> UIComponentFactory : "uses"
+AppointmentUI --> MenuComponent : "uses"
+AppointmentUI --> InputComponent : "uses"
+AppointmentUI --> ButtonComponent : "uses"
+
+note right of UIComponentFactory
+  **Abstract Factory Pattern**
+  Creates families of related
+  UI components. Each factory
+  produces a complete, consistent
+  UI theme (Console/Web/Accessible).
+end note
+
+note right of ConsoleUIFactory
+  **Console Theme**
+  ASCII dividers, bracketed buttons,
+  plain text prompts for terminal UI.
+end note
+
+note right of WebUIFactory
+  **Web Theme**
+  HTML tags for browser rendering,
+  semantic markup, styled output.
+end note
+
+note right of AccessibleUIFactory
+  **Accessible Theme**
+  Screen-reader friendly with
+  full descriptions and ARIA labels.
+end note
+
+@enduml

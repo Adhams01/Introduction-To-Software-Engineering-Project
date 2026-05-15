@@ -1,0 +1,126 @@
+@startuml DC1_Report_Decorator
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 14
+skinparam classBackgroundColor WhiteSmoke
+skinparam classArrowColor Black
+skinparam classBorderColor Black
+
+' Title and header
+title DC1 — Decorator Pattern: Report Enhancements\nOwner: Adham | Deliverable #2
+
+' Component interface
+interface ReportComponent {
+    +generate(): String
+    +getTitle(): String
+    +getDescription(): String
+}
+
+' Concrete component (base report)
+class BaseReport {
+    -title: String
+    -description: String
+    -content: String
+    +BaseReport(title: String, description: String, content: String)
+    +generate(): String
+    +getTitle(): String
+    +getDescription(): String
+}
+
+' Abstract decorator
+abstract class ReportDecorator {
+    #decoratedReport: ReportComponent
+    +ReportDecorator(report: ReportComponent)
+    +generate(): String
+    +getTitle(): String
+    +getDescription(): String
+}
+
+' Concrete decorators
+class HeaderDecorator {
+    -hospitalName: String
+    +HeaderDecorator(report: ReportComponent, hospitalName: String)
+    +generate(): String
+}
+
+class FooterDecorator {
+    -pageNumber: int
+    -totalPages: int
+    +FooterDecorator(report: ReportComponent, pageNumber: int, totalPages: int)
+    +generate(): String
+}
+
+class WatermarkDecorator {
+    -watermarkText: String
+    +WatermarkDecorator(report: ReportComponent)
+    +WatermarkDecorator(report: ReportComponent, watermarkText: String)
+    +generate(): String
+}
+
+' Demo class
+class ReportDecoratorDemo {
+    +main(args: String[]): void
+}
+
+' Relationships
+ReportComponent <|.. BaseReport
+ReportComponent <|.. ReportDecorator
+ReportDecorator <|-- HeaderDecorator
+ReportDecorator <|-- FooterDecorator
+ReportDecorator <|-- WatermarkDecorator
+
+' Composition (the decoration chain)
+ReportDecorator o-- ReportComponent : decorates >
+
+' Demo usage
+ReportDecoratorDemo ..> BaseReport : creates
+ReportDecoratorDemo ..> HeaderDecorator : creates
+ReportDecoratorDemo ..> FooterDecorator : creates
+ReportDecoratorDemo ..> WatermarkDecorator : creates
+
+' Notes
+note right of ReportComponent
+    **Component Interface**
+    Defines the interface for
+    all reports - both base
+    reports and decorated ones.
+end note
+
+note bottom of BaseReport
+    **Concrete Component**
+    The basic report that can
+    be decorated with additional
+    features (header, footer,
+    watermark, etc.)
+end note
+
+note left of ReportDecorator
+    **Abstract Decorator**
+    Maintains a reference to
+    the decorated component
+    and delegates operations.
+    Subclasses add specific
+    behaviors.
+end note
+
+note bottom of HeaderDecorator
+    **Concrete Decorators**
+    Each adds specific behavior:
+    • Header adds hospital header
+    • Footer adds page numbers
+    • Watermark adds security mark
+end note
+
+note right of ReportDecoratorDemo
+    **Demo shows decoration:**
+    1. Base report (plain)
+    2. Base + Header
+    3. Base + Header + Footer
+    4. Base + Header + Watermark + Footer
+    
+    Decorators can be combined
+    in any order at runtime!
+end note
+
+@enduml

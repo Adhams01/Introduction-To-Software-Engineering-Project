@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS Portal — Hospital Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/hms-gui.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">
+        <span class="brand-icon" aria-hidden="true">+</span>
+        <div>
+            <h1>HMS Portal</h1>
+            <p class="tagline">Hospital Management — Deliverable 5</p>
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <a class="btn btn-ghost" href="/swagger-ui/index.html" target="_blank" rel="noopener">Swagger UI</a>
+        <a class="btn btn-ghost" href="/v3/api-docs" target="_blank" rel="noopener">OpenAPI JSON</a>
+        <a class="btn btn-ghost" href="/h2-console" target="_blank" rel="noopener">H2 Console</a>
+    </div>
+</header>
+
+<nav class="tabs" role="tablist">
+    <button type="button" class="tab active" data-panel="dashboard">Dashboard</button>
+    <button type="button" class="tab" data-panel="patients">Patients</button>
+    <button type="button" class="tab" data-panel="doctors">Doctors</button>
+    <button type="button" class="tab" data-panel="appointments">Appointments</button>
+    <button type="button" class="tab" data-panel="booking">Book (Composite)</button>
+</nav>
+
+<main class="main">
+    <section id="panel-dashboard" class="panel active">
+        <h2>Overview</h2>
+        <p class="lead">Live counts from the REST API. Use the tabs to manage data or open Swagger for raw HTTP testing.</p>
+        <div class="stats">
+            <div class="stat-card"><span class="stat-value" id="stat-patients">—</span><span class="stat-label">Patients</span></div>
+            <div class="stat-card"><span class="stat-value" id="stat-doctors">—</span><span class="stat-label">Doctors</span></div>
+            <div class="stat-card"><span class="stat-value" id="stat-appointments">—</span><span class="stat-label">Appointments</span></div>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-refresh-dashboard">Refresh counts</button>
+    </section>
+
+    <section id="panel-patients" class="panel">
+        <div class="panel-head">
+            <h2>Patients</h2>
+            <button type="button" class="btn btn-secondary" id="btn-reload-patients">Reload</button>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Register patient</h3>
+                <form id="form-patient" class="form">
+                    <label>Name<input name="name" required placeholder="Full name" minlength="2"></label>
+                    <label>Email<input name="email" type="email" required placeholder="unique@email.com"></label>
+                    <label>Phone<input name="phone" required placeholder="+20 100 123 4567"></label>
+                    <label>Birth date<input name="birthDate" placeholder="YYYY-MM-DD"></label>
+                    <label>Gender<select name="gender"><option value="">—</option><option>MALE</option><option>FEMALE</option><option>OTHER</option></select></label>
+                    <button type="submit" class="btn btn-primary">Create patient</button>
+                </form>
+            </div>
+            <div class="card">
+                <h3>Update / delete</h3>
+                <form id="form-patient-mutate" class="form">
+                    <label>Patient ID<input name="id" type="number" min="1" required placeholder="1"></label>
+                    <label>Name<input name="name" placeholder="Updated name"></label>
+                    <label>Email<input name="email" type="email"></label>
+                    <label>Phone<input name="phone"></label>
+                    <label>Birth date<input name="birthDate" placeholder="YYYY-MM-DD"></label>
+                    <label>Gender<select name="gender"><option value="">—</option><option>MALE</option><option>FEMALE</option><option>OTHER</option></select></label>
+                    <div class="btn-row">
+                        <button type="button" class="btn btn-secondary" id="btn-update-patient">PUT update</button>
+                        <button type="button" class="btn btn-danger" id="btn-delete-patient">DELETE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card card-table">
+            <h3>Directory</h3>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Gender</th></tr></thead><tbody id="tbody-patients"></tbody></table></div>
+        </div>
+    </section>
+
+    <section id="panel-doctors" class="panel">
+        <div class="panel-head">
+            <h2>Doctors</h2>
+            <button type="button" class="btn btn-secondary" id="btn-reload-doctors">Reload</button>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Add doctor</h3>
+                <form id="form-doctor" class="form">
+                    <label>Name<input name="name" required placeholder="Dr. …"></label>
+                    <label>Email<input name="email" type="email" required></label>
+                    <label>Phone<input name="phone" required></label>
+                    <label>Specialty<input name="specialty" required></label>
+                    <label class="check"><input type="checkbox" name="available" checked> Available</label>
+                    <button type="submit" class="btn btn-primary">Create doctor</button>
+                </form>
+            </div>
+            <div class="card">
+                <h3>Remove doctor</h3>
+                <form id="form-doctor-delete" class="form">
+                    <label>Doctor ID<input name="id" type="number" min="1" required></label>
+                    <button type="button" class="btn btn-danger" id="btn-delete-doctor">DELETE doctor</button>
+                </form>
+            </div>
+        </div>
+        <div class="card card-table">
+            <h3>Directory</h3>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Specialty</th><th>Email</th><th>Available</th></tr></thead><tbody id="tbody-doctors"></tbody></table></div>
+        </div>
+    </section>
+
+    <section id="panel-appointments" class="panel">
+        <div class="panel-head">
+            <h2>Appointments</h2>
+            <button type="button" class="btn btn-secondary" id="btn-reload-appointments">Reload</button>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Create appointment</h3>
+                <form id="form-appointment" class="form">
+                    <label>Patient ID<input name="patientId" type="number" min="1" required></label>
+                    <label>Doctor ID<input name="doctorId" type="number" min="1" required></label>
+                    <label>Date<input name="date" required placeholder="2026-06-01"></label>
+                    <label>Time slot<input name="timeSlot" required placeholder="10:00"></label>
+                    <label>Reason<input name="reason" placeholder="Optional"></label>
+                    <button type="submit" class="btn btn-primary">Create appointment</button>
+                </form>
+            </div>
+            <div class="card">
+                <h3>Reschedule / cancel</h3>
+                <form id="form-appointment-mutate" class="form">
+                    <label>Appointment ID<input name="id" type="number" min="1" required></label>
+                    <label>Patient ID<input name="patientId" type="number" min="1" required></label>
+                    <label>Doctor ID<input name="doctorId" type="number" min="1" required></label>
+                    <label>Date<input name="date" required></label>
+                    <label>Time slot<input name="timeSlot" required></label>
+                    <label>Reason<input name="reason"></label>
+                    <div class="btn-row">
+                        <button type="button" class="btn btn-secondary" id="btn-update-appointment">PUT update</button>
+                        <button type="button" class="btn btn-danger" id="btn-delete-appointment">DELETE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card card-table">
+            <h3>Schedule</h3>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Slot</th><th>Status</th></tr></thead><tbody id="tbody-appointments"></tbody></table></div>
+        </div>
+    </section>
+
+    <section id="panel-booking" class="panel">
+        <h2>Composite — Book appointment</h2>
+        <p class="lead">Orchestrates patient check, doctor check, then creates the appointment in one call.</p>
+        <div class="card" style="max-width: 520px;">
+            <form id="form-composite" class="form">
+                <label>Patient ID<input name="patientId" type="number" min="1" required></label>
+                <label>Doctor ID<input name="doctorId" type="number" min="1" required></label>
+                <label>Date<input name="date" required placeholder="2026-06-01"></label>
+                <label>Time slot<input name="timeSlot" required placeholder="10:00"></label>
+                <label>Reason<input name="reason" placeholder="Routine checkup"></label>
+                <button type="submit" class="btn btn-primary">POST /api/composite/book-appointment</button>
+            </form>
+        </div>
+        <div class="card" id="composite-result-wrap" hidden>
+            <h3>Last response</h3>
+            <pre id="composite-result" class="json-out"></pre>
+        </div>
+    </section>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="/js/hms-gui.js"></script>
+</body>
+</html>

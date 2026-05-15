@@ -1,0 +1,413 @@
+openapi: 3.0.3
+info:
+  title: Hospital Management System API
+  description: |
+    RESTful API for the Hospital Management System — Deliverable 5.
+    Services: Patient, Doctor, Appointment, and Composite Booking.
+  version: 1.0.0
+  contact:
+    name: SW311 Team
+servers:
+  - url: http://localhost:8080
+    description: Local Spring Boot server
+
+paths:
+  # =========================================================
+  # Patient Service
+  # =========================================================
+  /api/patients:
+    get:
+      tags: [Patient Service]
+      summary: Get all patients
+      operationId: getAllPatients
+      responses:
+        '200':
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                type: array
+              example:
+                - id: 1
+                  name: "Ahmed Hassan"
+                  email: "ahmed.hassan@example.com"
+                  phone: "+20 100 123 4567"
+                  birthDate: "1990-03-15"
+                  gender: "MALE"
+    post:
+      tags: [Patient Service]
+      summary: Create a patient
+      operationId: createPatient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientRequest'
+      responses:
+        '201':
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDTO'
+        '400':
+          description: Validation error
+        '409':
+          description: Duplicate email
+
+  /api/patients/{id}:
+    get:
+      tags: [Patient Service]
+      summary: Get patient by ID
+      operationId: getPatientById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Patient found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDTO'
+        '404':
+          description: Patient not found
+    put:
+      tags: [Patient Service]
+      summary: Update a patient
+      operationId: updatePatient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientRequest'
+      responses:
+        '200':
+          description: Patient updated
+        '404':
+          description: Patient not found
+    delete:
+      tags: [Patient Service]
+      summary: Delete a patient
+      operationId: deletePatient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Patient deleted
+        '404':
+          description: Patient not found
+
+  # =========================================================
+  # Doctor Service
+  # =========================================================
+  /api/doctors:
+    get:
+      tags: [Doctor Service]
+      summary: Get all doctors
+      operationId: getAllDoctors
+      responses:
+        '200':
+          description: List of doctors
+          content:
+            application/json:
+              schema:
+                type: array
+              example:
+                - id: 1
+                  name: "Dr. Fatima Zaki"
+                  email: "fatima.zaki@hospital.com"
+                  specialty: "Cardiology"
+                  available: true
+    post:
+      tags: [Doctor Service]
+      summary: Create a doctor
+      operationId: createDoctor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DoctorRequest'
+      responses:
+        '201':
+          description: Doctor created
+        '400':
+          description: Validation error
+
+  /api/doctors/{id}:
+    get:
+      tags: [Doctor Service]
+      summary: Get doctor by ID
+      operationId: getDoctorById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Doctor found
+        '404':
+          description: Doctor not found
+    put:
+      tags: [Doctor Service]
+      summary: Update a doctor
+      operationId: updateDoctor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DoctorRequest'
+      responses:
+        '200':
+          description: Doctor updated
+        '404':
+          description: Doctor not found
+    delete:
+      tags: [Doctor Service]
+      summary: Delete a doctor
+      operationId: deleteDoctor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Doctor deleted
+        '404':
+          description: Doctor not found
+
+  # =========================================================
+  # Appointment Service
+  # =========================================================
+  /api/appointments:
+    get:
+      tags: [Appointment Service]
+      summary: Get all appointments
+      operationId: getAllAppointments
+      responses:
+        '200':
+          description: List of appointments
+    post:
+      tags: [Appointment Service]
+      summary: Create an appointment
+      operationId: createAppointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentRequest'
+      responses:
+        '201':
+          description: Appointment created
+        '400':
+          description: Validation error
+
+  /api/appointments/{id}:
+    get:
+      tags: [Appointment Service]
+      summary: Get appointment by ID
+      operationId: getAppointmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Appointment found
+        '404':
+          description: Appointment not found
+    put:
+      tags: [Appointment Service]
+      summary: Update an appointment
+      operationId: updateAppointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentRequest'
+      responses:
+        '200':
+          description: Appointment updated
+        '404':
+          description: Appointment not found
+    delete:
+      tags: [Appointment Service]
+      summary: Delete an appointment
+      operationId: deleteAppointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Appointment deleted
+        '404':
+          description: Appointment not found
+
+  # =========================================================
+  # Composite Service
+  # =========================================================
+  /api/composite/book-appointment:
+    post:
+      tags: [Composite Service]
+      summary: Book Appointment (orchestrates Patient + Doctor + Appointment)
+      operationId: bookAppointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Booking confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '400':
+          description: Validation error
+        '404':
+          description: Patient or doctor not found
+
+components:
+  schemas:
+    PatientDTO:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        birthDate: { type: string }
+        gender: { type: string }
+
+    PatientRequest:
+      type: object
+      required: [name, email, phone]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          pattern: '^[0-9+\\-\\s]{7,20}$'
+        birthDate: { type: string }
+        gender: { type: string }
+
+    DoctorDTO:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        specialty: { type: string }
+        available: { type: boolean }
+
+    DoctorRequest:
+      type: object
+      required: [name, email, phone, specialty]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 100 }
+        email: { type: string, format: email }
+        phone: { type: string }
+        specialty: { type: string }
+        available: { type: boolean, default: true }
+
+    AppointmentDTO:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        patientId: { type: integer, format: int64 }
+        doctorId: { type: integer, format: int64 }
+        date: { type: string }
+        timeSlot: { type: string }
+        reason: { type: string }
+        status: { type: string }
+
+    AppointmentRequest:
+      type: object
+      required: [patientId, doctorId, date, timeSlot]
+      properties:
+        patientId: { type: integer, format: int64 }
+        doctorId: { type: integer, format: int64 }
+        date: { type: string }
+        timeSlot: { type: string }
+        reason: { type: string }
+
+    BookingRequest:
+      type: object
+      required: [patientId, doctorId, date, timeSlot]
+      properties:
+        patientId: { type: integer, format: int64 }
+        doctorId: { type: integer, format: int64 }
+        date: { type: string, description: 'YYYY-MM-DD' }
+        timeSlot: { type: string, description: 'HH:MM' }
+        reason: { type: string }
+
+    BookingResponse:
+      type: object
+      properties:
+        appointmentId: { type: integer, format: int64 }
+        patientId: { type: integer, format: int64 }
+        patientName: { type: string }
+        doctorId: { type: integer, format: int64 }
+        doctorName: { type: string }
+        doctorSpecialty: { type: string }
+        date: { type: string }
+        timeSlot: { type: string }
+        reason: { type: string }
+        status: { type: string }

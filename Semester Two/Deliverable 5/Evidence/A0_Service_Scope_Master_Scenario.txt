@@ -1,0 +1,149 @@
+HOSPITAL MANAGEMENT SYSTEM — DELIVERABLE 5
+SERVICE SCOPE + MASTER SCENARIO DOCUMENT (A0)
+SW311 Software Design & Development — Spring 2026
+Team: Adham (Leader), Andrew, Yassin, Maged
+
+================================================================
+SECTION 1: PROJECT OVERVIEW
+================================================================
+
+This deliverable implements a REST-based Hospital Management System (HMS)
+using Service-Oriented Architecture (SOA) principles. The system exposes
+three independently deployable microservices, composed into one application
+using Spring Boot.
+
+================================================================
+SECTION 2: THE THREE CORE SERVICES
+================================================================
+
+Service 1 — Patient Service
+  Owner    : Adham
+  Purpose  : Manages patient registration and profile data
+  Base URL : /api/patients
+  Type     : Business Service
+  Endpoints:
+    GET    /api/patients           → Retrieve all patients
+    GET    /api/patients/{id}      → Retrieve patient by ID
+    POST   /api/patients           → Register a new patient
+    PUT    /api/patients/{id}      → Update patient information
+    DELETE /api/patients/{id}      → Remove a patient record
+
+Service 2 — Doctor Service
+  Owner    : Andrew
+  Purpose  : Manages doctor profiles and availability
+  Base URL : /api/doctors
+  Type     : Business Service
+  Endpoints:
+    GET    /api/doctors            → Retrieve all doctors
+    GET    /api/doctors/{id}       → Retrieve doctor by ID
+    POST   /api/doctors            → Register a new doctor
+    PUT    /api/doctors/{id}       → Update doctor information
+    DELETE /api/doctors/{id}       → Remove a doctor record
+
+Service 3 — Appointment Service
+  Owner    : Maged
+  Purpose  : Manages appointment scheduling between patients and doctors
+  Base URL : /api/appointments
+  Type     : Coordination Service
+  Endpoints:
+    GET    /api/appointments            → Retrieve all appointments
+    GET    /api/appointments/{id}       → Retrieve appointment by ID
+    POST   /api/appointments            → Create a new appointment
+    PUT    /api/appointments/{id}       → Reschedule / update appointment
+    DELETE /api/appointments/{id}       → Cancel an appointment
+
+================================================================
+SECTION 3: COMPOSITE SERVICE — "BOOK APPOINTMENT"
+================================================================
+
+Name     : Book Appointment Service
+Owner    : Andrew (implementation), Adham (design)
+Base URL : /api/composite/book-appointment
+Type     : Composite / Orchestration Service
+Purpose  : Orchestrates Patient, Doctor, and Appointment services
+           to complete an appointment booking in a single API call.
+
+---------------------------------------------------------------
+ACTORS
+---------------------------------------------------------------
+  Primary Actor : Patient (or Receptionist acting on behalf)
+  Secondary     : Doctor, System (HMS)
+
+---------------------------------------------------------------
+MAIN FLOW (Happy Path)
+---------------------------------------------------------------
+  Step 1: Client sends POST /api/composite/book-appointment
+          with { patientId, doctorId, date, timeSlot, reason }
+
+  Step 2: Composite service calls GET /api/patients/{patientId}
+          → Validates patient exists → receives patient data
+
+  Step 3: Composite service calls GET /api/doctors/{doctorId}
+          → Validates doctor exists + is available → receives doctor data
+
+  Step 4: Composite service calls POST /api/appointments
+          with { patientId, doctorId, date, timeSlot, reason }
+          → Appointment is created → receives appointment confirmation
+
+  Step 5: Composite service returns 201 Created with:
+          {
+            "appointmentId": 7,
+            "patient": { "id": 1, "name": "Ahmed Hassan" },
+            "doctor":  { "id": 2, "name": "Dr. Fatima Nour" },
+            "date":    "2026-06-01",
+            "time":    "10:00",
+            "status":  "CONFIRMED"
+          }
+
+---------------------------------------------------------------
+ALTERNATIVE FLOW 1 — Patient Not Found
+---------------------------------------------------------------
+  Step 2a: GET /api/patients/{patientId} returns 404
+  Step 2b: Composite service returns 404 with message:
+           "Patient not found. Booking cancelled."
+  Flow ends.
+
+---------------------------------------------------------------
+ALTERNATIVE FLOW 2 — Doctor Not Available
+---------------------------------------------------------------
+  Step 3a: GET /api/doctors/{doctorId} returns 404 or doctor unavailable
+  Step 3b: Composite service returns 409 Conflict with message:
+           "Doctor is not available for the requested time slot."
+  Flow ends.
+
+---------------------------------------------------------------
+ALTERNATIVE FLOW 3 — Appointment Creation Fails
+---------------------------------------------------------------
+  Step 4a: POST /api/appointments returns 400 or 500
+  Step 4b: Composite service returns the error upstream.
+  Flow ends.
+
+================================================================
+SECTION 4: SHARED ASSUMPTIONS
+================================================================
+
+1. All APIs use JSON (Content-Type: application/json)
+2. All APIs follow RESTful conventions (correct HTTP verbs + status codes)
+3. HTTP status codes used:
+     200 OK          — successful GET / PUT
+     201 Created     — successful POST
+     204 No Content  — successful DELETE
+     400 Bad Request — validation failure
+     404 Not Found   — resource does not exist
+     409 Conflict    — duplicate / business rule violation
+     500 Internal Server Error — unexpected failures
+4. Data is persisted in H2 in-memory database (resets on restart)
+5. No authentication/authorization is required for this deliverable
+6. API naming: lowercase, hyphen-separated, plural nouns (/api/patients, /api/doctors)
+
+================================================================
+SECTION 5: TECHNOLOGY STACK
+================================================================
+
+  Framework  : Spring Boot 3.2.5
+  Language   : Java 17
+  Build Tool : Maven
+  Database   : H2 In-Memory (dev/testing)
+  ORM        : Spring Data JPA / Hibernate
+  Validation : Jakarta Bean Validation (@Valid, @NotBlank, @Email)
+  Docs       : OpenAPI 3.0 (YAML) — Maged's task M2

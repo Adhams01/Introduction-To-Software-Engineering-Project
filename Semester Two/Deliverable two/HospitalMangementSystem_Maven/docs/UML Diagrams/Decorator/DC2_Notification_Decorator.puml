@@ -1,0 +1,138 @@
+@startuml DC2_Notification_Decorator
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 14
+skinparam classBackgroundColor WhiteSmoke
+skinparam classArrowColor Black
+skinparam classBorderColor Black
+
+' Title and header
+title DC2 — Decorator Pattern: Notification Sender\nOwner: Yassin | Deliverable #2
+
+' Component interface
+interface NotificationSender {
+    +sendNotification(message: String): boolean
+    +getSenderType(): String
+}
+
+' Concrete component (base sender)
+class BaseNotificationSender {
+    -senderName: String
+    +BaseNotificationSender(senderName: String)
+    +sendNotification(message: String): boolean
+    +getSenderType(): String
+    +getSenderName(): String
+}
+
+' Abstract decorator
+abstract class SenderDecorator {
+    #wrappedSender: NotificationSender
+    +SenderDecorator(sender: NotificationSender)
+    +sendNotification(message: String): boolean
+    +getSenderType(): String
+}
+
+' Concrete decorators
+class LoggingSender {
+    +LoggingSender(sender: NotificationSender)
+    +sendNotification(message: String): boolean
+    +getSenderType(): String
+}
+
+class RetrySender {
+    -maxRetries: int
+    -retryDelayMs: long
+    +RetrySender(sender: NotificationSender, maxRetries: int, retryDelayMs: long)
+    +sendNotification(message: String): boolean
+    +getSenderType(): String
+}
+
+class ThrottlingSender {
+    -minIntervalMs: long
+    -lastSentTime: long
+    -maxMessagesPerMinute: int
+    -messageCount: int
+    -windowStartTime: long
+    +ThrottlingSender(sender: NotificationSender, minIntervalMs: long, maxMessagesPerMinute: int)
+    +sendNotification(message: String): boolean
+    +getSenderType(): String
+}
+
+' Demo
+class NotificationDecoratorDemo {
+    +main(args: String[]): void
+}
+
+' Relationships
+NotificationSender <|.. BaseNotificationSender
+NotificationSender <|.. SenderDecorator
+SenderDecorator <|-- LoggingSender
+SenderDecorator <|-- RetrySender
+SenderDecorator <|-- ThrottlingSender
+
+' Composition (the decoration chain)
+SenderDecorator o-- NotificationSender : wraps >
+
+' Demo usage
+NotificationDecoratorDemo ..> BaseNotificationSender : creates
+NotificationDecoratorDemo ..> LoggingSender : creates
+NotificationDecoratorDemo ..> RetrySender : creates
+NotificationDecoratorDemo ..> ThrottlingSender : creates
+
+' Notes
+note right of NotificationSender
+    **Component Interface**
+    Defines methods for all
+    notification senders - both
+    base and decorated.
+end note
+
+note left of BaseNotificationSender
+    **Concrete Component**
+    Basic notification sender.
+    Can be used standalone or
+    decorated with additional
+    behaviors.
+end note
+
+note bottom of SenderDecorator
+    **Abstract Decorator**
+    Maintains reference to wrapped
+    sender and delegates calls.
+    Subclasses add specific
+    cross-cutting behaviors.
+end note
+
+note right of LoggingSender
+    **Concrete Decorators**
+    Each adds one responsibility:
+    • LoggingSender: audit trail
+    • RetrySender: fault tolerance
+    • ThrottlingSender: rate limiting
+end note
+
+note bottom of RetrySender
+    **Decorator Stacking**
+    Can combine in any order:
+    ThrottlingSender → 
+    RetrySender → 
+    LoggingSender → 
+    BaseNotificationSender
+    
+    Order affects behavior!
+end note
+
+note right of NotificationDecoratorDemo
+    **Demo Shows:**
+    1. Base sender (plain)
+    2. Single decorator
+    3. Stacked decorators
+    4. Performance comparison
+    
+    Each decorator adds
+    behavior without changing
+    the original sender code.
+end note
+
+@enduml

@@ -1,0 +1,195 @@
+@startuml AbstractFactory_Case1_ReportFactory
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "hospitalmangementsystem.patterns.abstractfactory" {
+
+    ' ===== ABSTRACT FACTORY =====
+    interface ReportFactory {
+        + createReportDocument(): ReportDocument
+        + createReportHeader(title: String): ReportHeader
+        + createReportFooter(pageNum: int): ReportFooter
+        + createChart(data: double[]): ChartComponent
+    }
+
+    ' ===== CONCRETE FACTORIES =====
+    class PDFReportFactory implements ReportFactory {
+        + createReportDocument(): ReportDocument
+        + createReportHeader(title: String): ReportHeader
+        + createReportFooter(pageNum: int): ReportFooter
+        + createChart(data: double[]): ChartComponent
+    }
+
+    class CSVReportFactory implements ReportFactory {
+        + createReportDocument(): ReportDocument
+        + createReportHeader(title: String): ReportHeader
+        + createReportFooter(pageNum: int): ReportFooter
+        + createChart(data: double[]): ChartComponent
+    }
+
+    class HTMLReportFactory implements ReportFactory {
+        + createReportDocument(): ReportDocument
+        + createReportHeader(title: String): ReportHeader
+        + createReportFooter(pageNum: int): ReportFooter
+        + createChart(data: double[]): ChartComponent
+    }
+
+    ' ===== ABSTRACT PRODUCTS =====
+    interface ReportDocument {
+        + addSection(title: String, content: String): void
+        + generate(): byte[]
+    }
+
+    interface ReportHeader {
+        + setTitle(title: String): void
+        + render(): String
+    }
+
+    interface ReportFooter {
+        + setPageNumber(n: int): void
+        + render(): String
+    }
+
+    interface ChartComponent {
+        + setData(values: double[]): void
+        + render(): String
+    }
+
+    ' ===== PDF PRODUCT FAMILY =====
+    class PDFReportDocument implements ReportDocument {
+        - sections: List<String>
+        + addSection(title: String, content: String): void
+        + generate(): byte[]
+    }
+
+    class PDFReportHeader implements ReportHeader {
+        - title: String
+        + setTitle(title: String): void
+        + render(): String
+    }
+
+    class PDFReportFooter implements ReportFooter {
+        - pageNumber: int
+        + setPageNumber(n: int): void
+        + render(): String
+    }
+
+    class PDFChartComponent implements ChartComponent {
+        - data: double[]
+        + setData(values: double[]): void
+        + render(): String
+    }
+
+    ' ===== CSV PRODUCT FAMILY =====
+    class CSVReportDocument implements ReportDocument {
+        - rows: List<String[]>
+        + addSection(title: String, content: String): void
+        + generate(): byte[]
+    }
+
+    class CSVReportHeader implements ReportHeader {
+        - title: String
+        + setTitle(title: String): void
+        + render(): String
+    }
+
+    class CSVReportFooter implements ReportFooter {
+        - rowCount: int
+        + setPageNumber(n: int): void
+        + render(): String
+    }
+
+    class CSVChartComponent implements ChartComponent {
+        - data: double[]
+        + setData(values: double[]): void
+        + render(): String
+    }
+
+    ' ===== HTML PRODUCT FAMILY =====
+    class HTMLReportDocument implements ReportDocument {
+        - htmlContent: StringBuilder
+        + addSection(title: String, content: String): void
+        + generate(): byte[]
+    }
+
+    class HTMLReportHeader implements ReportHeader {
+        - title: String
+        + setTitle(title: String): void
+        + render(): String
+    }
+
+    class HTMLReportFooter implements ReportFooter {
+        - timestamp: String
+        + setPageNumber(n: int): void
+        + render(): String
+    }
+
+    class HTMLChartComponent implements ChartComponent {
+        - data: double[]
+        + setData(values: double[]): void
+        + render(): String
+    }
+}
+
+package "hospitalmangementsystem.controller" {
+    class ReportController {
+        - factory: ReportFactory
+        + ReportController(factory: ReportFactory)
+        + generatePatientReport(patientId: String): byte[]
+        + generateAppointmentReport(start: Date, end: Date): byte[]
+    }
+}
+
+' ===== RELATIONSHIPS =====
+
+' Factories create their product families
+PDFReportFactory ..> PDFReportDocument : "<<creates>>"
+PDFReportFactory ..> PDFReportHeader : "<<creates>>"
+PDFReportFactory ..> PDFReportFooter : "<<creates>>"
+PDFReportFactory ..> PDFChartComponent : "<<creates>>"
+
+CSVReportFactory ..> CSVReportDocument : "<<creates>>"
+CSVReportFactory ..> CSVReportHeader : "<<creates>>"
+CSVReportFactory ..> CSVReportFooter : "<<creates>>"
+CSVReportFactory ..> CSVChartComponent : "<<creates>>"
+
+HTMLReportFactory ..> HTMLReportDocument : "<<creates>>"
+HTMLReportFactory ..> HTMLReportHeader : "<<creates>>"
+HTMLReportFactory ..> HTMLReportFooter : "<<creates>>"
+HTMLReportFactory ..> HTMLChartComponent : "<<creates>>"
+
+' Client uses abstract factory
+ReportController --> ReportFactory : "uses"
+ReportController --> ReportDocument : "uses"
+ReportController --> ReportHeader : "uses"
+ReportController --> ReportFooter : "uses"
+ReportController --> ChartComponent : "uses"
+
+note right of ReportFactory
+  **Abstract Factory Pattern**
+  Provides interface for creating
+  families of related products.
+  Each concrete factory creates
+  a complete, consistent family.
+end note
+
+note right of PDFReportFactory
+  **PDF Family**
+  All products work together
+  to generate PDF reports.
+end note
+
+note right of CSVReportFactory
+  **CSV Family**
+  All products work together
+  to generate CSV exports.
+end note
+
+note right of HTMLReportFactory
+  **HTML Family**
+  All products work together
+  to generate web-viewable reports.
+end note
+
+@enduml

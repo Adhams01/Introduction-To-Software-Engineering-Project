@@ -1,0 +1,112 @@
+@startuml BR1_Notification_Bridge
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 14
+skinparam classBackgroundColor WhiteSmoke
+skinparam classArrowColor Black
+skinparam classBorderColor Black
+
+' Title and header
+title BR1 — Bridge Pattern: Notification System\nOwner: Adham | Deliverable #2
+
+' Abstraction hierarchy (left side)
+package "Abstraction Hierarchy" {
+    abstract class Notification {
+        #channel: NotificationChannel
+        +Notification(channel: NotificationChannel)
+        +send(): void
+        +getContent(): String
+    }
+    
+    class AppointmentReminder {
+        -patientName: String
+        -appointmentTime: String
+        +AppointmentReminder(channel: NotificationChannel, patientName: String, appointmentTime: String)
+        +send(): void
+        +getContent(): String
+    }
+    
+    class BillingAlert {
+        -patientId: String
+        -amount: double
+        +BillingAlert(channel: NotificationChannel, patientId: String, amount: double)
+        +send(): void
+        +getContent(): String
+    }
+}
+
+' Implementation hierarchy (right side)
+package "Implementation Hierarchy" {
+    interface NotificationChannel {
+        +sendNotification(content: String): void
+        +getChannelName(): String
+    }
+    
+    class EmailChannel {
+        -emailAddress: String
+        +EmailChannel(emailAddress: String)
+        +sendNotification(content: String): void
+        +getChannelName(): String
+    }
+    
+    class SmsChannel {
+        -phoneNumber: String
+        +SmsChannel(phoneNumber: String)
+        +sendNotification(content: String): void
+        +getChannelName(): String
+    }
+    
+    class InAppChannel {
+        -userId: String
+        +InAppChannel(userId: String)
+        +sendNotification(content: String): void
+        +getChannelName(): String
+    }
+}
+
+' Demo class
+class NotificationBridgeDemo {
+    +main(args: String[]): void
+}
+
+' Relationships
+Notification <|-- AppointmentReminder
+Notification <|-- BillingAlert
+NotificationChannel <|.. EmailChannel
+NotificationChannel <|.. SmsChannel
+NotificationChannel <|.. InAppChannel
+
+' The Bridge relationship (crucial)
+Notification o-- NotificationChannel : uses >
+
+' Demo usage
+NotificationBridgeDemo ..> Notification : uses
+NotificationBridgeDemo ..> EmailChannel : uses
+NotificationBridgeDemo ..> SmsChannel : uses
+NotificationBridgeDemo ..> InAppChannel : uses
+
+' Notes
+note right of Notification
+    **Abstraction (Notification)**
+    Defines notification content
+    and logic. Delegates delivery
+    to the channel implementation.
+end note
+
+note left of NotificationChannel
+    **Implementation (Channel)**
+    Defines delivery mechanism.
+    Can be changed at runtime
+    without affecting notification
+    content.
+end note
+
+note bottom of NotificationBridgeDemo
+    **Demo shows runtime switching:**
+    Same notification sent via
+    Email → SMS → InApp without
+    changing notification classes
+end note
+
+@enduml

@@ -1,0 +1,220 @@
+HOSPITAL MANAGEMENT SYSTEM — DELIVERABLE 5
+A2: PATIENT SERVICE — FULL LIFECYCLE DESIGN
+SW311 Software Design & Development — Spring 2026
+Owner: Adham
+
+================================================================
+1. SERVICE CANDIDATE IDENTIFICATION
+================================================================
+
+Service Name   : Patient Service
+Classification : Business Service
+Base URL       : /api/patients
+
+Justification for Selection as a Service Candidate:
+
+  a) HIGH REUSABILITY
+     The Patient entity is referenced by multiple other services
+     (Appointment Service, Doctor Service, Composite Book Appointment).
+     Centralizing patient management avoids duplicating patient data
+     across services and ensures a single source of truth.
+
+  b) FUNCTIONAL INDEPENDENCE
+     Patient management (registration, profile updates, retrieval)
+     does not depend on Doctor or Appointment logic. It can run,
+     be tested, and be deployed independently.
+
+  c) CLEAR BUSINESS BOUNDARY
+     The Patient Service encapsulates one well-defined business
+     capability: managing the lifecycle of patient records.
+     This aligns with the SOA principle of "loose coupling and
+     high cohesion."
+
+  d) REUSE POTENTIAL
+     Other hospital systems (billing, lab, pharmacy) could consume
+     the Patient Service without any modification, demonstrating
+     true service reusability.
+
+================================================================
+2. SERVICE REQUIREMENTS
+================================================================
+
+--- FUNCTIONAL REQUIREMENTS (FR) ---
+
+FR-P-01: The system shall allow retrieving a list of all registered patients.
+         Endpoint: GET /api/patients
+         Response: 200 OK + JSON array of patient objects
+
+FR-P-02: The system shall allow retrieving a single patient by their unique ID.
+         Endpoint: GET /api/patients/{id}
+         Response: 200 OK + JSON patient object | 404 if not found
+
+FR-P-03: The system shall allow registering a new patient with name, email,
+         phone, date of birth, and gender.
+         Endpoint: POST /api/patients
+         Response: 201 Created + created patient object
+
+FR-P-04: The system shall allow updating an existing patient's information.
+         Endpoint: PUT /api/patients/{id}
+         Response: 200 OK + updated patient object | 404 if not found
+
+FR-P-05: The system shall allow deleting a patient record by ID.
+         Endpoint: DELETE /api/patients/{id}
+         Response: 204 No Content | 404 if not found
+
+--- NON-FUNCTIONAL REQUIREMENTS (NFR) ---
+
+NFR-P-01 (Performance):
+  GET /api/patients must respond within 500ms for up to 1,000 records.
+
+NFR-P-02 (Data Integrity):
+  Email addresses must be unique across all patient records.
+  Duplicate email registration must return HTTP 409 Conflict.
+
+NFR-P-03 (Reliability):
+  The service must return consistent HTTP status codes as per the
+  REST standard for all success and failure conditions.
+
+NFR-P-04 (Maintainability):
+  The Patient Service must follow a layered architecture:
+  Controller → Service → Repository → Database.
+  No business logic should exist in the Controller layer.
+
+NFR-P-05 (Usability):
+  All error responses must include a machine-readable JSON body
+  with "status", "error", and "message" fields.
+
+================================================================
+3. INTERFACE DESIGN — REST API
+================================================================
+
+--- Endpoint 1: GET /api/patients ---
+
+  Description : Retrieve all registered patients
+  Method      : GET
+  URL         : /api/patients
+  Auth        : None (for this deliverable)
+  Request Body: None
+
+  Success Response (200 OK):
+  [
+    {
+      "id": 1,
+      "name": "Ahmed Hassan",
+      "email": "ahmed.hassan@example.com",
+      "phone": "+20 100 123 4567",
+      "birthDate": "1990-03-15",
+      "gender": "MALE"
+    },
+    {
+      "id": 2,
+      "name": "Sara Ali",
+      "email": "sara.ali@example.com",
+      "phone": "+20 111 987 6543",
+      "birthDate": "1995-07-22",
+      "gender": "FEMALE"
+    }
+  ]
+
+  Error Responses:
+    500 Internal Server Error — unexpected server failure
+
+--- Endpoint 2: GET /api/patients/{id} ---
+
+  Description  : Retrieve a single patient by ID
+  Method       : GET
+  URL          : /api/patients/{id}
+  Path Param   : id (Long) — the patient's database ID
+  Request Body : None
+
+  Success Response (200 OK):
+  {
+    "id": 1,
+    "name": "Ahmed Hassan",
+    "email": "ahmed.hassan@example.com",
+    "phone": "+20 100 123 4567",
+    "birthDate": "1990-03-15",
+    "gender": "MALE"
+  }
+
+  Error Responses:
+    404 Not Found:
+    {
+      "timestamp": "2026-06-01T10:00:00",
+      "status": 404,
+      "error": "Not Found",
+      "message": "Patient not found with id: 99"
+    }
+
+--- Endpoint 3: POST /api/patients ---
+
+  Description  : Register a new patient
+  Method       : POST
+  URL          : /api/patients
+  Request Body (required):
+  {
+    "name":      "Nour Ibrahim",        ← required, 2–100 chars
+    "email":     "nour@example.com",    ← required, valid email, unique
+    "phone":     "+20 123 456 7890",    ← required
+    "birthDate": "2000-01-10",          ← optional, YYYY-MM-DD
+    "gender":    "FEMALE"               ← optional
+  }
+
+  Success Response (201 Created):
+  {
+    "id":        4,
+    "name":      "Nour Ibrahim",
+    "email":     "nour@example.com",
+    "phone":     "+20 123 456 7890",
+    "birthDate": "2000-01-10",
+    "gender":    "FEMALE"
+  }
+
+  Error Responses:
+    400 Bad Request — missing/invalid fields
+    409 Conflict   — email already exists
+
+--- Endpoint 4: PUT /api/patients/{id} ---
+
+  Description  : Update an existing patient [Yassin Y2]
+  Method       : PUT
+  URL          : /api/patients/{id}
+  Path Param   : id (Long)
+  Request Body : Same structure as POST
+  Success      : 200 OK + updated patient object
+  Errors       : 400, 404, 409
+
+--- Endpoint 5: DELETE /api/patients/{id} ---
+
+  Description  : Delete a patient record [Maged M1]
+  Method       : DELETE
+  URL          : /api/patients/{id}
+  Path Param   : id (Long)
+  Request Body : None
+  Success      : 204 No Content
+  Errors       : 404 Not Found
+
+================================================================
+4. PATIENT DATA MODEL
+================================================================
+
+Field       Type      Constraints           Description
+---------   ------    -------------------   -------------------------
+id          Long      Auto-generated, PK    Unique patient identifier
+name        String    Required, 2-100 chars Patient full name
+email       String    Required, unique,     Email address (login key)
+                      valid email format
+phone       String    Required, 7-20 chars  Contact phone number
+birthDate   String    Optional, YYYY-MM-DD  Date of birth
+gender      String    Optional              MALE / FEMALE / OTHER
+
+================================================================
+5. CONSTRAINTS
+================================================================
+
+C-P-01: Patient IDs are system-generated and cannot be set by the client.
+C-P-02: Email must be unique. Attempts to register duplicate emails return 409.
+C-P-03: Deleting a patient does NOT cascade-delete their appointments
+        (foreign key handling is at the Appointment Service level).
+C-P-04: The service uses H2 in-memory DB for this deliverable.
+        All data resets on application restart.

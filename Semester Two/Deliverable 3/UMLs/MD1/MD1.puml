@@ -1,0 +1,79 @@
+@startuml MD1_AppointmentMediator
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+title Mediator Pattern — MD1: Appointment Coordination\nAuthor: [ANDREW]
+
+package "hospitalmangementsystem.patterns.behavioral.mediator.appointment" {
+
+    interface AppointmentMediator <<Mediator>> {
+        + notify(sender : AppointmentColleague, event : String, appointmentId : String) : void
+    }
+
+    class AppointmentCoordinator <<ConcreteMediator>> {
+        - notificationComponent : NotificationComponent
+        - billingComponent : BillingComponent
+        - doctorScheduleComponent : DoctorScheduleComponent
+        + setNotificationComponent(nc : NotificationComponent) : void
+        + setBillingComponent(bc : BillingComponent) : void
+        + setDoctorScheduleComponent(ds : DoctorScheduleComponent) : void
+        + notify(sender : AppointmentColleague, event : String, appointmentId : String) : void
+    }
+
+    abstract class AppointmentColleague <<Colleague>> {
+        # mediator : AppointmentMediator
+        + AppointmentColleague(mediator : AppointmentMediator)
+        + setMediator(mediator : AppointmentMediator) : void
+        # send(event : String, appointmentId : String) : void
+    }
+
+    class SchedulingComponent <<ConcreteColleague>> {
+        + SchedulingComponent(mediator : AppointmentMediator)
+        + bookAppointment(appointmentId : String) : void
+        + cancelAppointment(appointmentId : String) : void
+    }
+
+    class NotificationComponent <<ConcreteColleague>> {
+        + NotificationComponent(mediator : AppointmentMediator)
+        + sendConfirmation(appointmentId : String) : void
+        + sendCancellation(appointmentId : String) : void
+    }
+
+    class BillingComponent <<ConcreteColleague>> {
+        + BillingComponent(mediator : AppointmentMediator)
+        + createBillingEntry(appointmentId : String) : void
+        + reverseBillingEntry(appointmentId : String) : void
+    }
+
+    class DoctorScheduleComponent <<ConcreteColleague>> {
+        + DoctorScheduleComponent(mediator : AppointmentMediator)
+        + blockSlot(appointmentId : String) : void
+        + releaseSlot(appointmentId : String) : void
+    }
+}
+
+' Relationships
+AppointmentCoordinator ..|> AppointmentMediator : implements
+
+AppointmentColleague <|-- SchedulingComponent : extends
+AppointmentColleague <|-- NotificationComponent : extends
+AppointmentColleague <|-- BillingComponent : extends
+AppointmentColleague <|-- DoctorScheduleComponent : extends
+
+AppointmentColleague --> AppointmentMediator : "mediator\n(sends events to)"
+AppointmentCoordinator --> NotificationComponent : "coordinates"
+AppointmentCoordinator --> BillingComponent : "coordinates"
+AppointmentCoordinator --> DoctorScheduleComponent : "coordinates"
+
+note bottom of AppointmentCoordinator
+  **Mediator Pattern (GoF)**
+  APPOINTMENT_BOOKED →
+    sendConfirmation + createBillingEntry + blockSlot
+  APPOINTMENT_CANCELLED →
+    sendCancellation + reverseBillingEntry + releaseSlot
+  Colleagues never call each other directly.
+  4 colleagues + 1 mediator = 4 dependencies (not 12).
+end note
+
+@enduml
